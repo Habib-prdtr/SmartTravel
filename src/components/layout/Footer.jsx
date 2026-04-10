@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plane, Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import { Plane, Mail, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -28,9 +28,10 @@ export default function Footer() {
             Aplikasi perencana perjalanan berbasis AI yang membantu menyusun rute, anggaran, dan aktivitas liburan Anda dengan praktis.
           </p>
           <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s' }}><Facebook size={20} /></a>
-            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s' }}><Twitter size={20} /></a>
-            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s' }}><Instagram size={20} /></a>
+            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s', fontSize: '0.9rem', fontWeight: 600 }}>FB</a>
+            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s', fontSize: '0.9rem', fontWeight: 600 }}>TW</a>
+            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s', fontSize: '0.9rem', fontWeight: 600 }}>IG</a>
+            <a href="#" style={{ color: 'inherit', transition: 'color 0.2s' }}><Globe size={20} /></a>
           </div>
         </div>
 

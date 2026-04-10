@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, CalendarDays, Wallet, Sparkles } from 'lucide-react';
+import TripForm from '../components/travel/TripForm';
 import './Home.css';
 
 export default function Home() {
@@ -18,37 +19,7 @@ export default function Home() {
               SmartTravel membantu menyusun itinerary harian, mencari tempat wisata, dan mengestimasi biaya dengan cerdas. Cukup masukkan tujuan dan budgetmu!
             </p>
             
-            <div className="hero-search-box card">
-              <div className="search-inputs">
-                <div className="input-group">
-                  <MapPin className="input-icon" size={22} />
-                  <div className="input-field-wrapper">
-                    <label>Tujuan</label>
-                    <input type="text" placeholder="Mau ke mana?" />
-                  </div>
-                </div>
-                <div className="divider"></div>
-                <div className="input-group">
-                  <CalendarDays className="input-icon" size={22} />
-                  <div className="input-field-wrapper">
-                    <label>Tanggal</label>
-                    <input type="date" />
-                  </div>
-                </div>
-                <div className="divider"></div>
-                <div className="input-group">
-                  <Wallet className="input-icon" size={22} />
-                  <div className="input-field-wrapper">
-                    <label>Budget</label>
-                    <input type="text" placeholder="Rp / USD" />
-                  </div>
-                </div>
-              </div>
-              <button className="btn btn-primary search-btn">
-                <Sparkles size={18} />
-                Generate Itinerary
-              </button>
-            </div>
+            <TripForm />
           </div>
         </div>
       </section>

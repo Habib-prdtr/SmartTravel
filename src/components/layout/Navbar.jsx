@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Plane, Menu, X, ChevronRight } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
@@ -18,6 +19,16 @@ export default function Navbar() {
   const closeMenu = () => {
     setIsMenuOpen(false);
     document.body.style.overflow = '';
+  };
+
+  const handleMulaiPlan = () => {
+    closeMenu();
+    navigate('/planner');
+  };
+
+  const handleMasuk = () => {
+    closeMenu();
+    navigate('/auth');
   };
 
   useEffect(() => {
@@ -48,8 +59,8 @@ export default function Navbar() {
 
         {/* Desktop Actions (Right) */}
         <div className="nav-actions desktop-only">
-          <button className="btn btn-secondary nav-btn">Masuk</button>
-          <button className="btn btn-primary nav-btn">Mulai Plan</button>
+          <button className="btn btn-secondary nav-btn" onClick={handleMasuk}>Masuk</button>
+          <button className="btn btn-primary nav-btn" onClick={handleMulaiPlan}>Mulai Plan</button>
         </div>
 
         {/* Mobile Toggle Button */}
@@ -95,8 +106,8 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-nav-footer">
-          <button className="btn btn-secondary" onClick={closeMenu}>Masuk</button>
-          <button className="btn btn-primary" onClick={closeMenu}>Mulai Plan</button>
+          <button className="btn btn-secondary" onClick={handleMasuk}>Masuk</button>
+          <button className="btn btn-primary" onClick={handleMulaiPlan}>Mulai Plan</button>
         </div>
       </div>
     </nav>

@@ -1,0 +1,104 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Plane, Menu, X, ChevronRight } from 'lucide-react';
+import './Navbar.css';
+
+export default function Navbar() {
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  
+  const isActive = (path) => location.pathname === path;
+
+  const toggleMenu = () => {
+    setIsMenuOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    document.body.style.overflow = '';
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <nav className={`navbar ${scrolled ? 'nav-scrolled' : ''}`}>
+      <div className="container nav-content">
+        <Link to="/" className="nav-brand" onClick={closeMenu}>
+          <div className="brand-logo">
+            <Plane size={24} className="brand-icon" />
+          </div>
+          <span className="brand-text">SmartTravel</span>
+        </Link>
+        
+        {/* Desktop Links (Center) */}
+        <div className="nav-links desktop-only">
+          <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>Home</Link>
+          <Link to="/planner" className={`nav-link ${isActive('/planner') ? 'active' : ''}`}>Planner</Link>
+          <Link to="/map" className={`nav-link ${isActive('/map') ? 'active' : ''}`}>Map</Link>
+          <Link to="/budget" className={`nav-link ${isActive('/budget') ? 'active' : ''}`}>Budget</Link>
+        </div>
+
+        {/* Desktop Actions (Right) */}
+        <div className="nav-actions desktop-only">
+          <button className="btn btn-secondary nav-btn">Masuk</button>
+          <button className="btn btn-primary nav-btn">Mulai Plan</button>
+        </div>
+
+        {/* Mobile Toggle Button */}
+        <button className="mobile-menu-btn" onClick={toggleMenu} aria-label="Open menu">
+          <Menu size={28} />
+        </button>
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      <div className={`mobile-menu-overlay ${isMenuOpen ? 'open' : ''}`} onClick={closeMenu}></div>
+      
+      {/* Mobile Drawer Container */}
+      <div className={`mobile-menu-container ${isMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-menu-header">
+          <div className="nav-brand">
+            <div className="brand-logo">
+              <Plane size={20} className="brand-icon" />
+            </div>
+            <span className="brand-text" style={{fontSize: '1.2rem'}}>SmartTravel</span>
+          </div>
+          <button className="mobile-close-btn" onClick={closeMenu} aria-label="Close menu">
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="mobile-nav-links">
+          <Link to="/" className={`mobile-nav-link ${isActive('/') ? 'active' : ''}`} onClick={closeMenu}>
+            <span>Home</span>
+            <ChevronRight size={18} className="chevron" />
+          </Link>
+          <Link to="/planner" className={`mobile-nav-link ${isActive('/planner') ? 'active' : ''}`} onClick={closeMenu}>
+            <span>Planner</span>
+            <ChevronRight size={18} className="chevron" />
+          </Link>
+          <Link to="/map" className={`mobile-nav-link ${isActive('/map') ? 'active' : ''}`} onClick={closeMenu}>
+            <span>Map</span>
+            <ChevronRight size={18} className="chevron" />
+          </Link>
+          <Link to="/budget" className={`mobile-nav-link ${isActive('/budget') ? 'active' : ''}`} onClick={closeMenu}>
+            <span>Budget</span>
+            <ChevronRight size={18} className="chevron" />
+          </Link>
+        </div>
+
+        <div className="mobile-nav-footer">
+          <button className="btn btn-secondary" onClick={closeMenu}>Masuk</button>
+          <button className="btn btn-primary" onClick={closeMenu}>Mulai Plan</button>
+        </div>
+      </div>
+    </nav>
+  );
+}

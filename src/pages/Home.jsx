@@ -11,7 +11,7 @@ export default function Home() {
         <div className="hero-background"></div>
         <div className="container hero-container">
           <div className="hero-content">
-            <span className="badge">AI-Powered Travel Planner</span>
+            <span className="badge">yuhuuuuuuuu</span>
             <h1 className="hero-title">
               Rencanakan Liburan Impianmu Secara Otomatis
             </h1>

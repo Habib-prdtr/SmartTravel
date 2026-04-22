@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS smarttravel_db;
+USE smarttravel_db;
+
+CREATE TABLE IF NOT EXISTS trips (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  destination VARCHAR(120) NOT NULL,
+  start_date DATE NULL,
+  end_date DATE NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

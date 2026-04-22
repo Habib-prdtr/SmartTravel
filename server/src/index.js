@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { testDbConnection } from "./db.js";
 import authRoutes from "./routes/auth.routes.js";
 import tripRoutes from "./routes/trip.routes.js";
+import itineraryRoutes from "./routes/itinerary.routes.js";
+import budgetRoutes from "./routes/budget.routes.js";
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripRoutes);
+app.use("/api/trips", itineraryRoutes);
+app.use("/api/trips", budgetRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);

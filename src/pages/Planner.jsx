@@ -1,8 +1,12 @@
 import React from 'react';
 import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { ItineraryDay } from './Itinerary';
 
 export default function Planner() {
+  const location = useLocation();
+  const selectedTrip = location.state?.trip;
+
   const mockActivitiesDay1 = [
     { time: "09:00", title: "Tiba di Bandara Ngurah Rai", description: "Penjemputan sewaan mobil dan menuju ke hotel untuk menitipkan barang bawaan.", type: "flight", duration: "1 Jam" },
     { time: "10:30", title: "Check-in The Apurva Kempinski", description: "Proses check-in, menyimpan barang, dan bersantai sejenak menikmati pemandangan lobi yang mengagumkan.", type: "hotel", duration: "1.5 Jam" },
@@ -17,11 +21,17 @@ export default function Planner() {
     { time: "19:00", title: "Kembali ke Resor", description: "Istirahat untuk memulihkan energi menghadapi hari ketiga.", type: "hotel", duration: "" }
   ];
 
+  const dateLabel = selectedTrip?.startDate
+    ? new Date(selectedTrip.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })
+    : '12 Agustus - 14 Agustus 2026';
+
+  const tripTitle = selectedTrip?.name || 'Eksplorasi Selatan Bali';
+
   return (
     <div className="container" style={{ paddingTop: '3rem', paddingBottom: '5rem' }}>
       {/* Breadcrumb minimalis */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-        <span>Home</span> <ChevronRight size={14} /> <span>Planner</span> <ChevronRight size={14} /> <span style={{ color: 'var(--primary)', fontWeight: 500 }}>Eksplorasi Selatan Bali</span>
+        <span>Home</span> <ChevronRight size={14} /> <span>Planner</span> <ChevronRight size={14} /> <span style={{ color: 'var(--primary)', fontWeight: 500 }}>{tripTitle}</span>
       </div>
 
       {/* Header Planner */}
@@ -42,9 +52,9 @@ export default function Planner() {
             </span>
             <span style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 500 }}>• 3 Hari 2 Malam</span>
           </div>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.75rem', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>Eksplorasi Selatan Bali</h1>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.75rem', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>{tripTitle}</h1>
           <p className="text-muted" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem', marginBottom: '1.5rem' }}>
-            <Calendar size={18} /> 12 Agustus - 14 Agustus 2026
+            <Calendar size={18} /> {dateLabel}
           </p>
           
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>

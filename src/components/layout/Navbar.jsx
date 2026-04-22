@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Plane, Menu, X, ChevronRight } from 'lucide-react';
 import './Navbar.css';
+import { clearSession, getUser, isAuthenticated } from '../../lib/session';
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
+  const [user, setUser] = useState(getUser());
   
   const isActive = (path) => location.pathname === path;
 
@@ -31,12 +34,36 @@ export default function Navbar() {
     navigate('/auth');
   };
 
+  const handleLogout = () => {
+    clearSession();
+    setIsLoggedIn(false);
+    setUser(null);
+    closeMenu();
+    navigate('/auth');
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const syncSession = () => {
+      setIsLoggedIn(isAuthenticated());
+      setUser(getUser());
+    };
+
+    syncSession();
+    window.addEventListener('focus', syncSession);
+    window.addEventListener('storage', syncSession);
+
+    return () => {
+      window.removeEventListener('focus', syncSession);
+      window.removeEventListener('storage', syncSession);
+    };
   }, []);
 
   return (
@@ -59,7 +86,13 @@ export default function Navbar() {
 
         {/* Desktop Actions (Right) */}
         <div className="nav-actions desktop-only">
-          <button className="btn btn-secondary nav-btn" onClick={handleMasuk}>Masuk</button>
+          {isLoggedIn ? (
+            <button className="btn btn-secondary nav-btn" onClick={handleLogout}>
+              Keluar{user?.name ? ` (${user.name})` : ''}
+            </button>
+          ) : (
+            <button className="btn btn-secondary nav-btn" onClick={handleMasuk}>Masuk</button>
+          )}
           <button className="btn btn-primary nav-btn" onClick={handleMulaiPlan}>Mulai Plan</button>
         </div>
 
@@ -106,7 +139,13 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-nav-footer">
-          <button className="btn btn-secondary" onClick={handleMasuk}>Masuk</button>
+          {isLoggedIn ? (
+            <button className="btn btn-secondary" onClick={handleLogout}>
+              Keluar
+            </button>
+          ) : (
+            <button className="btn btn-secondary" onClick={handleMasuk}>Masuk</button>
+          )}
           <button className="btn btn-primary" onClick={handleMulaiPlan}>Mulai Plan</button>
         </div>
       </div>

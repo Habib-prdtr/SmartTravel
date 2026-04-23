@@ -76,6 +76,30 @@ CREATE TABLE `itinerary_days` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `itinerary_items`
+--
+
+DROP TABLE IF EXISTS `itinerary_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `itinerary_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `itinerary_day_id` int NOT NULL,
+  `title` varchar(150) NOT NULL,
+  `location_name` varchar(150) DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
+  `activity_type` varchar(30) DEFAULT 'sightseeing',
+  `notes` text,
+  `sort_order` int DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `itinerary_day_id` (`itinerary_day_id`),
+  CONSTRAINT `itinerary_items_ibfk_1` FOREIGN KEY (`itinerary_day_id`) REFERENCES `itinerary_days` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `trips`
 --
 
@@ -90,6 +114,7 @@ CREATE TABLE `trips` (
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `notes` text,
+  `deleted_at` datetime DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),

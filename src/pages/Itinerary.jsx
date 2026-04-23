@@ -91,16 +91,24 @@ export function ItineraryDay({ dayNumber, date, activities }) {
       </div>
       
       <div style={{ paddingTop: '0.5rem' }}>
-        {activities.map((act, index) => (
-          <ItineraryActivity 
-            key={index}
-            time={act.time}
-            title={act.title}
-            description={act.description}
-            type={act.type}
-            duration={act.duration}
-          />
-        ))}
+        {activities.length > 0 ? (
+          activities.map((act, index) => (
+            <ItineraryActivity
+              key={index}
+              time={act.time}
+              title={act.title}
+              description={act.description}
+              type={act.type}
+              duration={act.duration}
+            />
+          ))
+        ) : (
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <p className="text-muted" style={{ margin: 0 }}>
+              Belum ada aktivitas untuk hari ini.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

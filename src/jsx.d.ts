@@ -1,4 +1,5 @@
 declare module "*.jsx" {
-  const value: any;
+  import type { ComponentType } from "react";
+  const value: ComponentType<unknown>;
   export default value;
 }

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap');
 
 :root {
   /* Soft Elegant Blue Theme */
@@ -68,6 +68,38 @@ button {
 /* Typography Helpers */
 .text-primary { color: var(--primary); }
 .text-muted { color: var(--text-muted); }
+
+/* Stylish Brand Typography */
+.brand-text-styled {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.04em;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.brand-text-styled .smart {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.brand-text-styled .travel {
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-left: 1px;
+}
+
+.brand-text-styled.light .smart {
+  color: white;
+}
+
+.brand-text-styled.light .travel {
+  background: linear-gradient(135deg, #ffffff, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
 /* Utilities */
 .container {

@@ -66,7 +66,10 @@ export default function Auth() {
           <div style={{ width:'44px', height:'44px', borderRadius:'var(--radius-md)', backgroundColor:'rgba(255,255,255,0.2)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center', border:'1px solid rgba(255,255,255,0.3)' }}>
             <Plane size={24} />
           </div>
-          <span style={{ fontSize:'1.4rem', fontWeight:800 }}>SmartTravel</span>
+          <div className="brand-text-styled light" style={{ fontSize: '1.5rem' }}>
+            <span className="smart">Smart</span>
+            <span className="travel">Travel</span>
+          </div>
         </Link>
 
         {/* Tagline + Stats */}
@@ -99,6 +102,33 @@ export default function Auth() {
         {/* Tombol kembali — tampil di Mobile */}
         <Link to="/" className="mobile-auth-back" style={{ position:'absolute', top:'1.5rem', left:'1.5rem', display:'flex', alignItems:'center', gap:'0.4rem', color:'var(--text-muted)', fontSize:'0.9rem', fontWeight:600, textDecoration:'none' }}>
           <Plane size={16} /> Beranda
+        </Link>
+
+        {/* Logo Mobile */}
+        <Link to="/" className="mobile-only-logo" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.75rem', 
+          textDecoration: 'none',
+          marginBottom: '2.5rem',
+          alignSelf: 'flex-start'
+        }}>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: 'var(--radius-md)', 
+            background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)'
+          }}>
+            <Plane size={20} color="white" />
+          </div>
+          <div className="brand-text-styled" style={{ fontSize: '1.4rem' }}>
+            <span className="smart">Smart</span>
+            <span className="travel">Travel</span>
+          </div>
         </Link>
 
         <div style={{ width:'100%', maxWidth:'420px' }}>
@@ -198,6 +228,7 @@ export default function Auth() {
         @media (min-width: 992px) {
           .auth-visual { display: flex !important; }
           .mobile-auth-back { display: none !important; }
+          .mobile-only-logo { display: none !important; }
         }
       `}} />
     </div>

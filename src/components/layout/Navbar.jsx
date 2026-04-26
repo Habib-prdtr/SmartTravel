@@ -46,7 +46,10 @@ export default function Navbar() {
           <div className="brand-logo">
             <Plane size={24} className="brand-icon" />
           </div>
-          <span className="brand-text">SmartTravel</span>
+          <div className="brand-text-styled" style={{ fontSize: '1.45rem' }}>
+            <span className="smart">Smart</span>
+            <span className="travel">Travel</span>
+          </div>
         </Link>
         
         {/* Desktop Links (Center) */}
@@ -79,7 +82,10 @@ export default function Navbar() {
             <div className="brand-logo">
               <Plane size={20} className="brand-icon" />
             </div>
-            <span className="brand-text" style={{fontSize: '1.2rem'}}>SmartTravel</span>
+            <div className="brand-text-styled" style={{ fontSize: '1.3rem' }}>
+              <span className="smart">Smart</span>
+              <span className="travel">Travel</span>
+            </div>
           </div>
           <button className="mobile-close-btn" onClick={closeMenu} aria-label="Close menu">
             <X size={24} />

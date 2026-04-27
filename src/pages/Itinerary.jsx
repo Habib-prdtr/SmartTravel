@@ -1,7 +1,7 @@
 import React from 'react';
-import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane } from 'lucide-react';
+import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain } from 'lucide-react';
 
-export function ItineraryActivity({ time, title, description, type, duration }) {
+export function ItineraryActivity({ time, title, description, type, duration, weatherAlert }) {
   // Menentukan ikon dan warna berdasarkan tipe aktivitas
   const getIcon = () => {
     switch (type) {
@@ -69,9 +69,21 @@ export function ItineraryActivity({ time, title, description, type, duration }) 
           </span>
         </div>
         <p className="text-muted" style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>{description}</p>
+        
         {duration && (
           <div style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--text-light)', fontWeight: 500, display: 'inline-block', backgroundColor: 'var(--surface-hover)', padding: '4px 8px', borderRadius: '6px' }}>
             Berlangsung: {duration}
+          </div>
+        )}
+
+        {weatherAlert && (
+          <div style={{ 
+            marginTop: '1rem', padding: '0.75rem 1rem', borderRadius: '8px',
+            backgroundColor: '#fff7ed', border: '1px solid #fdba74', color: '#c2410c',
+            display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem'
+          }}>
+            <CloudRain size={18} style={{ flexShrink: 0 }} />
+            <span><strong>Peringatan Cuaca:</strong> Hujan diprediksi turun di area ini. Pertimbangkan pindah jadwal.</span>
           </div>
         )}
       </div>
@@ -100,6 +112,7 @@ export function ItineraryDay({ dayNumber, date, activities }) {
               description={act.description}
               type={act.type}
               duration={act.duration}
+              weatherAlert={act.weatherAlert}
             />
           ))
         ) : (

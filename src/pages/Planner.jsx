@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ItineraryDay } from "./Itinerary";
+import { geocodeLocation } from "../lib/routing";
+import { checkWeatherForecast } from "../lib/weather";
 import {
   createItineraryDay,
   createItineraryItem,
@@ -60,6 +62,7 @@ export default function Planner() {
   const [savingActivityDayId, setSavingActivityDayId] = useState(null);
   const [isDeletingTrip, setIsDeletingTrip] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [weatherAlerts, setWeatherAlerts] = useState({}); // { itemId: boolean }
 
   const selectedTrip = useMemo(
     () => trips.find((trip) => trip.id === Number(selectedTripId)) || null,
@@ -154,6 +157,66 @@ export default function Planner() {
       isMounted = false;
     };
   }, [selectedTripId]);
+
+  // Effect untuk mengecek cuaca pada aktivitas sightseeing
+  useEffect(() => {
+    let isMounted = true;
+    
+    async function checkWeatherForSightseeing() {
+      if (!itineraryDays.length || Object.keys(itemsByDayId).length === 0) return;
+      
+      const newAlerts = { ...weatherAlerts };
+      let hasChanges = false;
+      
+      for (const day of itineraryDays) {
+        if (!day.date) continue; // Skip if day has no date
+        
+        // Ensure valid date format YYYY-MM-DD
+        let targetDate;
+        try {
+          targetDate = new Date(day.date).toISOString().slice(0, 10);
+        } catch {
+          continue;
+        }
+        
+        const items = itemsByDayId[day.id] || [];
+        for (const item of items) {
+          // Check if it's sightseeing, has location, and we haven't checked it yet
+          if (item.activity_type === "sightseeing" && item.location_name && newAlerts[item.id] === undefined) {
+            try {
+              // 1. Geocode location name to coordinates
+              const coords = await geocodeLocation(item.location_name);
+              if (coords) {
+                // 2. Fetch weather forecast from Open-Meteo
+                const weather = await checkWeatherForecast(coords.lat, coords.lon, targetDate);
+                if (weather && weather.isRainy) {
+                  newAlerts[item.id] = true; // Show rain alert
+                } else {
+                  newAlerts[item.id] = false; // Safe weather
+                }
+                hasChanges = true;
+              } else {
+                newAlerts[item.id] = false; // Geocoding failed, mark as checked
+                hasChanges = true;
+              }
+            } catch (err) {
+              console.warn("Weather check failed for", item.location_name, err);
+            }
+          }
+        }
+      }
+      
+      if (isMounted && hasChanges) {
+        setWeatherAlerts(newAlerts);
+      }
+    }
+    
+    checkWeatherForSightseeing();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [itemsByDayId, itineraryDays]);
 
   const handleAddDay = async () => {
     if (!selectedTripId) return;
@@ -410,11 +473,13 @@ export default function Planner() {
           itineraryDays.map((day) => {
             const dayItems = itemsByDayId[day.id] || [];
             const mappedActivities = dayItems.map((item) => ({
+              id: item.id,
               time: toTimeLabel(item.start_time, item.end_time),
               title: item.title,
               description: item.notes || item.location_name || "Tidak ada deskripsi",
               type: item.activity_type || "sightseeing",
-              duration: item.end_time ? `Selesai ${String(item.end_time).slice(0, 5)}` : ""
+              duration: item.end_time ? `Selesai ${String(item.end_time).slice(0, 5)}` : "",
+              weatherAlert: weatherAlerts[item.id] || false
             }));
             const draft = activityDraftByDayId[day.id] || { title: "", locationName: "", startTime: "", endTime: "", activityType: "sightseeing", notes: "" };
 

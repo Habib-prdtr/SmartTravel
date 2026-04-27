@@ -34,12 +34,9 @@ export default function Navbar() {
     navigate('/auth');
   };
 
-  const handleLogout = () => {
-    clearSession();
-    setIsLoggedIn(false);
-    setUser(null);
+  const handleProfile = () => {
     closeMenu();
-    navigate('/auth');
+    navigate('/profile');
   };
 
   useEffect(() => {
@@ -90,8 +87,8 @@ export default function Navbar() {
         {/* Desktop Actions (Right) */}
         <div className="nav-actions desktop-only">
           {isLoggedIn ? (
-            <button className="btn btn-secondary nav-btn" onClick={handleLogout}>
-              Keluar{user?.name ? ` (${user.name})` : ''}
+            <button className="btn btn-secondary nav-btn" onClick={handleProfile}>
+              Profil{user?.name ? ` (${user.name})` : ''}
             </button>
           ) : (
             <button className="btn btn-secondary nav-btn" onClick={handleMasuk}>Masuk</button>
@@ -146,8 +143,8 @@ export default function Navbar() {
 
         <div className="mobile-nav-footer">
           {isLoggedIn ? (
-            <button className="btn btn-secondary" onClick={handleLogout}>
-              Keluar
+            <button className="btn btn-secondary" onClick={handleProfile}>
+              Profil
             </button>
           ) : (
             <button className="btn btn-secondary" onClick={handleMasuk}>Masuk</button>

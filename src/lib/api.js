@@ -138,3 +138,10 @@ export async function createExpense(tripId, payload) {
     body: JSON.stringify(payload)
   });
 }
+
+export async function generateTripWithAI(prompt) {
+  return request("/api/ai/generate", {
+    method: "POST",
+    body: JSON.stringify({ prompt })
+  });
+}

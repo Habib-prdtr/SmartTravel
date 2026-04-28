@@ -157,7 +157,15 @@ export default function TripForm() {
         </button>
       </div>
 
-      <form onSubmit={handleGenerate} className="hero-search-box" style={{ flexDirection: mode === "ai" ? "column" : "row" }}>
+      <form 
+        onSubmit={handleGenerate} 
+        className="hero-search-box" 
+        style={{ 
+          flexDirection: mode === "ai" ? "column" : "row",
+          borderRadius: mode === "ai" ? "24px" : "var(--radius-full)",
+          padding: mode === "ai" ? "1.5rem 1.5rem 1.25rem 1.5rem" : "0.75rem"
+        }}
+      >
         {mode === "manual" ? (
           <div className="search-inputs">
             <div className="input-group">
@@ -271,22 +279,47 @@ export default function TripForm() {
             </div>
           </div>
         ) : (
-          <div style={{ width: "100%", padding: "0.5rem" }}>
+          <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.8rem", textAlign: "left" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#8b5cf6", marginBottom: "0.2rem" }}>
+              <span style={{ fontWeight: 600, fontSize: "1.05rem" }}>✨ Jelaskan liburan seperti apa yang kamu inginkan</span>
+            </div>
             <textarea
               placeholder="Contoh: Buatkan itinerary 3 hari di Tokyo dengan budget 5 juta, fokus ke kuliner dan belanja."
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               style={{
-                width: "100%", minHeight: "100px", padding: "1rem", borderRadius: "12px",
-                border: "1px solid var(--border-color)", fontSize: "1rem", resize: "vertical",
-                backgroundColor: "var(--bg-color)"
+                width: "100%", minHeight: "110px", padding: "1.2rem", borderRadius: "16px",
+                border: "2px solid #ddd6fe", fontSize: "1.05rem", resize: "vertical",
+                backgroundColor: "#f5f3ff", color: "#4c1d95", outline: "none",
+                lineHeight: "1.5", transition: "all 0.3s ease"
               }}
+              onFocus={(e) => { e.target.style.border = "2px solid #8b5cf6"; e.target.style.boxShadow = "0 0 0 4px rgba(139, 92, 246, 0.15)"; e.target.style.backgroundColor = "#fff"; }}
+              onBlur={(e) => { e.target.style.border = "2px solid #ddd6fe"; e.target.style.boxShadow = "none"; e.target.style.backgroundColor = "#f5f3ff"; }}
               required={mode === "ai"}
             />
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center", marginTop: "0.2rem" }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 500 }}>Coba:</span>
+              {["Honeymoon 3 hari di Bali", "Backpacker ke Jogja budget 1 juta", "Wisata alam di Lombok"].map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setAiPrompt(suggestion)}
+                  style={{
+                    padding: "0.3rem 0.75rem", borderRadius: "20px", border: "1px solid #c4b5fd",
+                    backgroundColor: "white", color: "#6d28d9", fontSize: "0.8rem", cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#ede9fe"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "white"}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
-        {errorMessage && <p style={{ color: "#b91c1c", margin: "0.5rem 0 0 0", fontSize: "0.9rem", textAlign: "center", width: "100%" }}>{errorMessage}</p>}
+        {errorMessage && <p style={{ color: "#b91c1c", margin: mode === "ai" ? "0.5rem 0 0 0" : "0.5rem 0 0 0", fontSize: "0.9rem", textAlign: mode === "ai" ? "left" : "center", width: "100%" }}>{errorMessage}</p>}
 
         <button 
           type="submit" 
@@ -294,14 +327,28 @@ export default function TripForm() {
           disabled={isSubmitting}
           style={{ 
             backgroundColor: mode === "ai" ? "#8b5cf6" : "var(--primary)",
-            width: mode === "ai" ? "100%" : "auto",
-            marginTop: mode === "ai" ? "1rem" : "0"
+            width: mode === "ai" ? "fit-content" : "auto",
+            alignSelf: mode === "ai" ? "flex-end" : "auto",
+            marginTop: mode === "ai" ? "1rem" : "0",
+            padding: mode === "ai" ? "0.75rem 1.5rem" : "0 2.5rem",
+            borderRadius: "var(--radius-full)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5rem",
+            fontSize: mode === "ai" ? "1rem" : "1.05rem",
+            boxShadow: mode === "ai" ? "0 4px 14px rgba(139, 92, 246, 0.3)" : "none",
+            border: "none",
+            cursor: isSubmitting ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease"
           }}
+          onMouseOver={(e) => { if(mode === "ai" && !isSubmitting) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(139, 92, 246, 0.4)"; } }}
+          onMouseOut={(e) => { if(mode === "ai") { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(139, 92, 246, 0.3)"; } }}
         >
           <Sparkles size={18} /> 
           {isSubmitting 
-            ? (mode === "ai" ? "AI sedang menyusun itinerary (ini butuh waktu)..." : "Menyimpan...") 
-            : (mode === "ai" ? "Generate dengan AI" : "Mulai Rencana")}
+            ? (mode === "ai" ? "Menyusun..." : "Menyimpan...") 
+            : (mode === "ai" ? "Generate AI" : "Mulai Rencana")}
         </button>
       </form>
     </div>

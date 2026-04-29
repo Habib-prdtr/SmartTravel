@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer } from "lucide-react";
+import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer, History } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ItineraryDay } from "./Itinerary";
 import { geocodeLocation } from "../lib/routing";
@@ -11,7 +11,10 @@ import {
   getItineraryDays,
   getItineraryItems,
   getTrips,
-  updateItineraryDay
+  updateItineraryDay,
+  updateTrip,
+  updateItineraryItem,
+  deleteItineraryItem
 } from "../lib/api";
 import { downloadSimplePdf } from "../lib/pdf";
 
@@ -63,6 +66,15 @@ export default function Planner() {
   const [isDeletingTrip, setIsDeletingTrip] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [weatherAlerts, setWeatherAlerts] = useState({}); // { itemId: boolean }
+  const [isEditingTrip, setIsEditingTrip] = useState(false);
+  const [editTripDraft, setEditTripDraft] = useState({ name: "", startDate: "", endDate: "" });
+  const [isUpdatingTrip, setIsUpdatingTrip] = useState(false);
+
+  // Edit Item State
+  const [editingItemId, setEditingItemId] = useState(null);
+  const [editingItemDayId, setEditingItemDayId] = useState(null);
+  const [editItemDraft, setEditItemDraft] = useState({ title: "", locationName: "", startTime: "", endTime: "", activityType: "sightseeing", notes: "" });
+  const [isSavingItem, setIsSavingItem] = useState(false);
 
   const selectedTrip = useMemo(
     () => trips.find((trip) => trip.id === Number(selectedTripId)) || null,
@@ -376,6 +388,97 @@ export default function Planner() {
     }
   };
 
+  const handleEditTrip = () => {
+    if (!selectedTrip) return;
+    setEditTripDraft({
+      name: selectedTrip.name || "",
+      startDate: selectedTrip.start_date ? toInputDate(selectedTrip.start_date) : "",
+      endDate: selectedTrip.end_date ? toInputDate(selectedTrip.end_date) : ""
+    });
+    setIsEditingTrip(true);
+  };
+
+  const handleSaveEditTrip = async () => {
+    if (!selectedTrip) return;
+    setIsUpdatingTrip(true);
+    setErrorMessage("");
+    try {
+      const updated = await updateTrip(selectedTrip.id, {
+        name: editTripDraft.name,
+        startDate: editTripDraft.startDate || null,
+        endDate: editTripDraft.endDate || null
+      });
+      
+      setTrips(prev => prev.map(t => 
+        t.id === selectedTrip.id 
+          ? { ...t, name: updated.name, start_date: updated.startDate, end_date: updated.endDate }
+          : t
+      ));
+      
+      setIsEditingTrip(false);
+    } catch (error) {
+      setErrorMessage(error.message || "Gagal mengupdate planner");
+    } finally {
+      setIsUpdatingTrip(false);
+    }
+  };
+
+  const handleEditActivityClick = (dayId, item) => {
+    setEditingItemId(item.id);
+    setEditingItemDayId(dayId);
+    setEditItemDraft({
+      title: item.title || "",
+      locationName: item.location_name || "",
+      startTime: item.start_time ? String(item.start_time).slice(0, 5) : "",
+      endTime: item.end_time ? String(item.end_time).slice(0, 5) : "",
+      activityType: item.activity_type || "sightseeing",
+      notes: item.notes || ""
+    });
+  };
+
+  const handleSaveEditedActivity = async () => {
+    if (!selectedTripId || !editingItemDayId || !editingItemId) return;
+    if (!editItemDraft.title?.trim()) {
+      alert("Judul aktivitas wajib diisi.");
+      return;
+    }
+    setIsSavingItem(true);
+    try {
+      const updated = await updateItineraryItem(selectedTripId, editingItemDayId, editingItemId, {
+        title: editItemDraft.title,
+        locationName: editItemDraft.locationName,
+        startTime: editItemDraft.startTime || null,
+        endTime: editItemDraft.endTime || null,
+        activityType: editItemDraft.activityType,
+        notes: editItemDraft.notes
+      });
+      setItemsByDayId(prev => ({
+        ...prev,
+        [editingItemDayId]: prev[editingItemDayId].map(item => item.id === editingItemId ? updated : item)
+      }));
+      setEditingItemId(null);
+      setEditingItemDayId(null);
+    } catch (error) {
+      alert(error.message || "Gagal mengedit aktivitas");
+    } finally {
+      setIsSavingItem(false);
+    }
+  };
+
+  const handleDeleteActivityClick = async (dayId, itemId) => {
+    if (!selectedTripId) return;
+    if (!window.confirm("Hapus aktivitas ini?")) return;
+    try {
+      await deleteItineraryItem(selectedTripId, dayId, itemId);
+      setItemsByDayId(prev => ({
+        ...prev,
+        [dayId]: prev[dayId].filter(item => item.id !== itemId)
+      }));
+    } catch (error) {
+      alert(error.message || "Gagal menghapus aktivitas");
+    }
+  };
+
   if (isLoadingTrips) {
     return (
       <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
@@ -416,10 +519,51 @@ export default function Planner() {
             <span style={{ color: "var(--text-muted)", fontSize: "0.95rem", fontWeight: 500 }}>{itineraryDays.length} hari itinerary</span>
           </div>
 
-          <h1 style={{ fontSize: "2.5rem", marginBottom: "0.75rem", letterSpacing: "-0.5px", color: "var(--text-main)" }}>{selectedTrip?.name}</h1>
-          <p className="text-muted" style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.05rem", marginBottom: "1.5rem" }}>
-            <Calendar size={18} /> {formatTripDateRange(selectedTrip)}
-          </p>
+          {isEditingTrip ? (
+            <div style={{ marginBottom: "1.5rem", display: "grid", gap: "0.5rem", backgroundColor: "white", padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+              <input 
+                type="text" 
+                value={editTripDraft.name} 
+                onChange={(e) => setEditTripDraft(prev => ({ ...prev, name: e.target.value }))}
+                style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", fontSize: "1.1rem", fontWeight: "bold" }}
+                placeholder="Nama Planner"
+              />
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input 
+                  type="date" 
+                  value={editTripDraft.startDate} 
+                  onChange={(e) => setEditTripDraft(prev => ({ ...prev, startDate: e.target.value }))}
+                  style={{ flex: 1, padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}
+                  title="Tanggal Mulai"
+                />
+                <input 
+                  type="date" 
+                  value={editTripDraft.endDate} 
+                  onChange={(e) => setEditTripDraft(prev => ({ ...prev, endDate: e.target.value }))}
+                  style={{ flex: 1, padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}
+                  title="Tanggal Selesai"
+                />
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-primary" onClick={handleSaveEditTrip} disabled={isUpdatingTrip} style={{ padding: "0.4rem 1rem", fontSize: "0.9rem" }}>
+                  {isUpdatingTrip ? "Menyimpan..." : "Simpan"}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setIsEditingTrip(false)} disabled={isUpdatingTrip} style={{ padding: "0.4rem 1rem", fontSize: "0.9rem" }}>
+                  Batal
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginBottom: "1.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
+                <h1 style={{ fontSize: "2.5rem", letterSpacing: "-0.5px", color: "var(--text-main)", margin: 0 }}>{selectedTrip?.name}</h1>
+                <button type="button" onClick={handleEditTrip} className="btn btn-secondary" style={{ padding: "0.3rem 0.75rem", fontSize: "0.85rem", borderRadius: "20px" }}>Edit Planner</button>
+              </div>
+              <p className="text-muted" style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.05rem", margin: 0 }}>
+                <Calendar size={18} /> {formatTripDateRange(selectedTrip)}
+              </p>
+            </div>
+          )}
 
           <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
             <button type="button" className="btn btn-primary" style={{ padding: "0.6rem 1.5rem", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -439,6 +583,9 @@ export default function Planner() {
               </option>
             ))}
           </select>
+          <button type="button" className="btn btn-secondary" onClick={() => navigate("/history")} style={{ padding: "0.55rem 0.9rem" }}>
+            Riwayat
+          </button>
           <button type="button" className="btn btn-secondary" onClick={handleAddDay} disabled={isAddingDay} style={{ padding: "0.55rem 0.9rem" }}>
             {isAddingDay ? "Menambah..." : "Tambah Hari"}
           </button>
@@ -485,7 +632,16 @@ export default function Planner() {
 
             return (
               <div key={day.id}>
-                <ItineraryDay dayNumber={day.day_number} date={formatDate(day.date)} activities={mappedActivities} />
+                <ItineraryDay 
+                  dayNumber={day.day_number} 
+                  date={formatDate(day.date)} 
+                  activities={mappedActivities} 
+                  onEditActivity={(itemId) => {
+                    const item = dayItems.find(i => i.id === itemId);
+                    if(item) handleEditActivityClick(day.id, item);
+                  }}
+                  onDeleteActivity={(itemId) => handleDeleteActivityClick(day.id, itemId)}
+                />
 
                 <div className="card" style={{ marginTop: "-2.5rem", marginBottom: "2rem", padding: "1rem 1.25rem", display: "grid", gap: "0.75rem" }}>
                   <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "end" }}>
@@ -538,6 +694,36 @@ export default function Planner() {
           </div>
         )}
       </div>
+
+      {/* Modal Edit Activity */}
+      {editingItemId && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div className="card" style={{ width: "100%", maxWidth: "500px", padding: "1.5rem" }}>
+            <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>Edit Aktivitas</h3>
+            <div style={{ display: "grid", gap: "0.75rem" }}>
+              <input type="text" placeholder="Judul aktivitas" value={editItemDraft.title} onChange={(e) => setEditItemDraft(prev => ({...prev, title: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+              <input type="text" placeholder="Lokasi" value={editItemDraft.locationName} onChange={(e) => setEditItemDraft(prev => ({...prev, locationName: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input type="time" value={editItemDraft.startTime} onChange={(e) => setEditItemDraft(prev => ({...prev, startTime: e.target.value}))} style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                <input type="time" value={editItemDraft.endTime} onChange={(e) => setEditItemDraft(prev => ({...prev, endTime: e.target.value}))} style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+              </div>
+              <select value={editItemDraft.activityType} onChange={(e) => setEditItemDraft(prev => ({...prev, activityType: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                <option value="sightseeing">Sightseeing</option>
+                <option value="dining">Dining</option>
+                <option value="cafe">Cafe</option>
+                <option value="hotel">Hotel</option>
+                <option value="flight">Flight</option>
+                <option value="other">Other</option>
+              </select>
+              <textarea placeholder="Catatan" value={editItemDraft.notes} onChange={(e) => setEditItemDraft(prev => ({...prev, notes: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", minHeight: "80px" }} />
+            </div>
+            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem", justifyContent: "flex-end" }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItemId(null); setEditingItemDayId(null); }} disabled={isSavingItem}>Batal</button>
+              <button type="button" className="btn btn-primary" onClick={handleSaveEditedActivity} disabled={isSavingItem}>{isSavingItem ? "Menyimpan..." : "Simpan"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

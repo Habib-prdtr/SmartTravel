@@ -133,3 +133,37 @@ export async function deleteTrip(req, res, next) {
     return next(error);
   }
 }
+
+export async function updateTrip(req, res, next) {
+  try {
+    const tripId = Number(req.params.tripId);
+    if (!Number.isInteger(tripId) || tripId <= 0) {
+      return res.status(400).json({ message: "Invalid trip id" });
+    }
+
+    const { name, startDate, endDate } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ message: "name is required" });
+    }
+
+    const [result] = await pool.query(
+      "UPDATE trips SET name = ?, start_date = ?, end_date = ? WHERE id = ? AND user_id = ? AND deleted_at IS NULL",
+      [name, startDate || null, endDate || null, tripId, req.user.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Trip not found" });
+    }
+
+    return res.status(200).json({
+      message: "Trip updated successfully",
+      id: tripId,
+      name,
+      startDate: startDate || null,
+      endDate: endDate || null
+    });
+  } catch (error) {
+    return next(error);
+  }
+}

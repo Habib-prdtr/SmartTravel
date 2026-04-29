@@ -88,6 +88,13 @@ export async function deleteTrip(tripId) {
   });
 }
 
+export async function updateTrip(tripId, payload) {
+  return request(`/api/trips/${tripId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
 export async function getItineraryDays(tripId) {
   return request(`/api/trips/${tripId}/itinerary-days`);
 }
@@ -114,6 +121,19 @@ export async function createItineraryItem(tripId, dayId, payload) {
   return request(`/api/trips/${tripId}/itinerary-days/${dayId}/items`, {
     method: "POST",
     body: JSON.stringify(payload)
+  });
+}
+
+export async function updateItineraryItem(tripId, dayId, itemId, payload) {
+  return request(`/api/trips/${tripId}/itinerary-days/${dayId}/items/${itemId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function deleteItineraryItem(tripId, dayId, itemId) {
+  return request(`/api/trips/${tripId}/itinerary-days/${dayId}/items/${itemId}`, {
+    method: "DELETE"
   });
 }
 

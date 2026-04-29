@@ -206,3 +206,83 @@ export async function createItineraryItem(req, res, next) {
     return next(error);
   }
 }
+
+export async function updateItineraryItem(req, res, next) {
+  try {
+    const tripId = Number(req.params.tripId);
+    const dayId = Number(req.params.dayId);
+    const itemId = Number(req.params.itemId);
+    const { title, locationName, startTime, endTime, activityType, notes, sortOrder } = req.body;
+
+    if (!Number.isInteger(tripId) || tripId <= 0) return res.status(400).json({ message: "Invalid trip id" });
+    if (!Number.isInteger(dayId) || dayId <= 0) return res.status(400).json({ message: "Invalid day id" });
+    if (!Number.isInteger(itemId) || itemId <= 0) return res.status(400).json({ message: "Invalid item id" });
+    if (!title || typeof title !== "string") return res.status(400).json({ message: "title is required" });
+
+    if (!(await userOwnsTrip(tripId, req.user.id))) return res.status(404).json({ message: "Trip not found" });
+
+    const existingDay = await findTripDay(dayId, tripId);
+    if (!existingDay) return res.status(404).json({ message: "Itinerary day not found" });
+
+    const [result] = await pool.query(
+      `UPDATE itinerary_items
+       SET title = ?, location_name = ?, start_time = ?, end_time = ?, activity_type = ?, notes = ?, sort_order = ?
+       WHERE id = ? AND itinerary_day_id = ?`,
+      [
+        title.trim(),
+        locationName?.trim() || null,
+        startTime || null,
+        endTime || null,
+        activityType || "sightseeing",
+        notes?.trim() || null,
+        Number.isInteger(sortOrder) ? sortOrder : 0,
+        itemId,
+        dayId
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Itinerary item not found" });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT id, itinerary_day_id, title, location_name, start_time, end_time, activity_type, notes, sort_order, created_at
+       FROM itinerary_items WHERE id = ? LIMIT 1`,
+      [itemId]
+    );
+
+    return res.status(200).json(rows[0]);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function deleteItineraryItem(req, res, next) {
+  try {
+    const tripId = Number(req.params.tripId);
+    const dayId = Number(req.params.dayId);
+    const itemId = Number(req.params.itemId);
+
+    if (!Number.isInteger(tripId) || tripId <= 0) return res.status(400).json({ message: "Invalid trip id" });
+    if (!Number.isInteger(dayId) || dayId <= 0) return res.status(400).json({ message: "Invalid day id" });
+    if (!Number.isInteger(itemId) || itemId <= 0) return res.status(400).json({ message: "Invalid item id" });
+
+    if (!(await userOwnsTrip(tripId, req.user.id))) return res.status(404).json({ message: "Trip not found" });
+
+    const existingDay = await findTripDay(dayId, tripId);
+    if (!existingDay) return res.status(404).json({ message: "Itinerary day not found" });
+
+    const [result] = await pool.query(
+      "DELETE FROM itinerary_items WHERE id = ? AND itinerary_day_id = ?",
+      [itemId, dayId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Itinerary item not found" });
+    }
+
+    return res.status(200).json({ message: "Itinerary item deleted" });
+  } catch (error) {
+    return next(error);
+  }
+}

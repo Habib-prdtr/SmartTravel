@@ -1,7 +1,7 @@
 import React from 'react';
-import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain } from 'lucide-react';
+import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain, Pencil, Trash2 } from 'lucide-react';
 
-export function ItineraryActivity({ time, title, description, type, duration, weatherAlert }) {
+export function ItineraryActivity({ id, time, title, description, type, duration, weatherAlert, onEdit, onDelete }) {
   // Menentukan ikon dan warna berdasarkan tipe aktivitas
   const getIcon = () => {
     switch (type) {
@@ -58,15 +58,27 @@ export function ItineraryActivity({ time, title, description, type, duration, we
       {/* Konten Kartu */}
       <div className="card" style={{ flex: 1, padding: '1.5rem', marginTop: '0.2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-main)' }}>{title}</h4>
-          <span style={{ 
-            display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', 
-            color: 'var(--text-muted)', backgroundColor: 'var(--bg-color)', 
-            padding: '6px 12px', borderRadius: 'var(--radius-full)',
-            border: '1px solid var(--border-color)'
-          }}>
-            <Clock size={14} /> {time}
-          </span>
+          <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-main)', flex: 1 }}>{title}</h4>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ 
+              display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', 
+              color: 'var(--text-muted)', backgroundColor: 'var(--bg-color)', 
+              padding: '6px 12px', borderRadius: 'var(--radius-full)',
+              border: '1px solid var(--border-color)'
+            }}>
+              <Clock size={14} /> {time}
+            </span>
+            {onEdit && (
+              <button onClick={() => onEdit(id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Edit Aktivitas">
+                <Pencil size={16} />
+              </button>
+            )}
+            {onDelete && (
+              <button onClick={() => onDelete(id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Hapus Aktivitas">
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
         </div>
         <p className="text-muted" style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>{description}</p>
         
@@ -91,7 +103,7 @@ export function ItineraryActivity({ time, title, description, type, duration, we
   );
 }
 
-export function ItineraryDay({ dayNumber, date, activities }) {
+export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDeleteActivity }) {
   return (
     <div style={{ marginBottom: '4rem' }}>
       <div style={{ 
@@ -107,12 +119,15 @@ export function ItineraryDay({ dayNumber, date, activities }) {
           activities.map((act, index) => (
             <ItineraryActivity
               key={index}
+              id={act.id}
               time={act.time}
               title={act.title}
               description={act.description}
               type={act.type}
               duration={act.duration}
               weatherAlert={act.weatherAlert}
+              onEdit={onEditActivity}
+              onDelete={onDeleteActivity}
             />
           ))
         ) : (

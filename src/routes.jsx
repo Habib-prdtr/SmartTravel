@@ -7,6 +7,7 @@ import Planner from './pages/Planner';
 import MapPage from './pages/MapPage';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
+import History from './pages/History';
 import { isAuthenticated } from './lib/session';
 
 function ProtectedRoute({ children }) {
@@ -51,6 +52,7 @@ export default function AppRoutes() {
         <Route path="planner" element={<Planner />} />
         <Route path="map" element={<MapPage />} />
         <Route path="budget" element={<Budget />} />
+        <Route path="history" element={<History />} />
         <Route path="profile" element={<Profile />} />
       </Route>
     </Routes>

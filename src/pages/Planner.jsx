@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer } from "lucide-react";
+import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer, History } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ItineraryDay } from "./Itinerary";
 import { geocodeLocation } from "../lib/routing";
@@ -583,6 +583,9 @@ export default function Planner() {
               </option>
             ))}
           </select>
+          <button type="button" className="btn btn-secondary" onClick={() => navigate("/history")} style={{ padding: "0.55rem 0.9rem" }}>
+            Riwayat
+          </button>
           <button type="button" className="btn btn-secondary" onClick={handleAddDay} disabled={isAddingDay} style={{ padding: "0.55rem 0.9rem" }}>
             {isAddingDay ? "Menambah..." : "Tambah Hari"}
           </button>

@@ -1,6 +1,15 @@
 import { getToken } from "./session";
+import { Capacitor } from "@capacitor/core";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// Di Android Emulator, localhost mengarah ke emulator itu sendiri.
+// 10.0.2.2 adalah IP khusus untuk mengakses localhost milik laptop/host.
+const isNative = Capacitor.isNativePlatform();
+let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+// Override khusus untuk Android Emulator jika tertulis localhost
+if (isNative && API_BASE_URL.includes("localhost")) {
+  API_BASE_URL = API_BASE_URL.replace("localhost", "10.0.2.2");
+}
 
 async function request(path, options = {}) {
   const token = getToken();
@@ -44,6 +53,13 @@ export async function login(payload) {
 
 export async function getMe() {
   return request("/api/auth/me");
+}
+
+export async function updateProfile(payload) {
+  return request("/api/auth/me", {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
 }
 
 export async function createTrip(payload) {

@@ -76,6 +76,15 @@ export default function Planner() {
   const [editItemDraft, setEditItemDraft] = useState({ title: "", locationName: "", startTime: "", endTime: "", activityType: "sightseeing", notes: "" });
   const [isSavingItem, setIsSavingItem] = useState(false);
 
+  // Toast & Modal State
+  const [successModal, setSuccessModal] = useState({ isOpen: false, message: "" });
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, type: "", id: null, dayId: null, title: "" });
+
+  const showSuccessModal = (msg) => {
+    setSuccessModal({ isOpen: true, message: msg });
+    setTimeout(() => setSuccessModal({ isOpen: false, message: "" }), 2000);
+  };
+
   const selectedTrip = useMemo(
     () => trips.find((trip) => trip.id === Number(selectedTripId)) || null,
     [trips, selectedTripId]
@@ -361,28 +370,45 @@ export default function Planner() {
 
   const handlePrint = () => window.print();
 
-  const handleDeletePlanner = async () => {
+  const triggerDeletePlanner = () => {
     if (!selectedTrip) return;
-    const confirmDelete = window.confirm(
-      `Hapus planner "${selectedTrip.name}" dari daftar aktif?\n\nPlanner akan dipindahkan ke history.`
-    );
-    if (!confirmDelete) return;
+    setDeleteConfirm({
+      isOpen: true,
+      type: "trip",
+      id: selectedTrip.id,
+      title: selectedTrip.name
+    });
+  };
 
+  const confirmDeleteAction = async () => {
     setIsDeletingTrip(true);
     setErrorMessage("");
     try {
-      await deleteTrip(selectedTrip.id);
-      const remainingTrips = trips.filter((trip) => trip.id !== selectedTrip.id);
-      setTrips(remainingTrips);
+      if (deleteConfirm.type === "trip") {
+        await deleteTrip(deleteConfirm.id);
+        const remainingTrips = trips.filter((trip) => trip.id !== deleteConfirm.id);
+        setTrips(remainingTrips);
 
-      if (remainingTrips.length > 0) {
-        setSelectedTripId(remainingTrips[0].id);
-      } else {
-        setSelectedTripId(null);
-        navigate("/");
+        if (remainingTrips.length > 0) {
+          setSelectedTripId(remainingTrips[0].id);
+        } else {
+          setSelectedTripId(null);
+          navigate("/");
+        }
+        setDeleteConfirm({ isOpen: false, type: "", id: null, dayId: null, title: "" });
+        showSuccessModal("Planner berhasil dihapus!");
+      } else if (deleteConfirm.type === "activity") {
+        await deleteItineraryItem(selectedTripId, deleteConfirm.dayId, deleteConfirm.id);
+        setItemsByDayId(prev => ({
+          ...prev,
+          [deleteConfirm.dayId]: prev[deleteConfirm.dayId].filter(item => item.id !== deleteConfirm.id)
+        }));
+        setDeleteConfirm({ isOpen: false, type: "", id: null, dayId: null, title: "" });
+        showSuccessModal("Aktivitas berhasil dihapus!");
       }
     } catch (error) {
-      setErrorMessage(error.message || "Gagal menghapus planner");
+      setErrorMessage(error.message || `Gagal menghapus ${deleteConfirm.type}`);
+      setDeleteConfirm({ isOpen: false, type: "", id: null, dayId: null, title: "" });
     } finally {
       setIsDeletingTrip(false);
     }
@@ -416,6 +442,7 @@ export default function Planner() {
       ));
       
       setIsEditingTrip(false);
+      showSuccessModal("Planner berhasil diedit!");
     } catch (error) {
       setErrorMessage(error.message || "Gagal mengupdate planner");
     } finally {
@@ -458,25 +485,22 @@ export default function Planner() {
       }));
       setEditingItemId(null);
       setEditingItemDayId(null);
+      showSuccessModal("Aktivitas berhasil diedit!");
     } catch (error) {
-      alert(error.message || "Gagal mengedit aktivitas");
+      setErrorMessage(error.message || "Gagal mengedit aktivitas");
     } finally {
       setIsSavingItem(false);
     }
   };
 
-  const handleDeleteActivityClick = async (dayId, itemId) => {
-    if (!selectedTripId) return;
-    if (!window.confirm("Hapus aktivitas ini?")) return;
-    try {
-      await deleteItineraryItem(selectedTripId, dayId, itemId);
-      setItemsByDayId(prev => ({
-        ...prev,
-        [dayId]: prev[dayId].filter(item => item.id !== itemId)
-      }));
-    } catch (error) {
-      alert(error.message || "Gagal menghapus aktivitas");
-    }
+  const triggerDeleteActivity = (dayId, itemId, itemTitle) => {
+    setDeleteConfirm({
+      isOpen: true,
+      type: "activity",
+      id: itemId,
+      dayId: dayId,
+      title: itemTitle
+    });
   };
 
   if (isLoadingTrips) {
@@ -592,11 +616,11 @@ export default function Planner() {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={handleDeletePlanner}
+            onClick={triggerDeletePlanner}
             disabled={isDeletingTrip}
             style={{ padding: "0.55rem 0.9rem", borderColor: "#fecaca", color: "#b91c1c" }}
           >
-            {isDeletingTrip ? "Menghapus..." : "Hapus Planner"}
+            Hapus Planner
           </button>
           <button type="button" onClick={handleDownloadPdf} style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "white", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-main)", cursor: "pointer", transition: "all 0.2s" }} title="Download PDF">
             <Download size={18} />
@@ -640,7 +664,10 @@ export default function Planner() {
                     const item = dayItems.find(i => i.id === itemId);
                     if(item) handleEditActivityClick(day.id, item);
                   }}
-                  onDeleteActivity={(itemId) => handleDeleteActivityClick(day.id, itemId)}
+                  onDeleteActivity={(itemId) => {
+                    const item = dayItems.find(i => i.id === itemId);
+                    if(item) triggerDeleteActivity(day.id, itemId, item.title || "Aktivitas ini");
+                  }}
                 />
 
                 <div className="card" style={{ marginTop: "-2.5rem", marginBottom: "2rem", padding: "1rem 1.25rem", display: "grid", gap: "0.75rem" }}>
@@ -700,27 +727,83 @@ export default function Planner() {
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
           <div className="card" style={{ width: "100%", maxWidth: "500px", padding: "1.5rem" }}>
             <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>Edit Aktivitas</h3>
-            <div style={{ display: "grid", gap: "0.75rem" }}>
-              <input type="text" placeholder="Judul aktivitas" value={editItemDraft.title} onChange={(e) => setEditItemDraft(prev => ({...prev, title: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-              <input type="text" placeholder="Lokasi" value={editItemDraft.locationName} onChange={(e) => setEditItemDraft(prev => ({...prev, locationName: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <input type="time" value={editItemDraft.startTime} onChange={(e) => setEditItemDraft(prev => ({...prev, startTime: e.target.value}))} style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-                <input type="time" value={editItemDraft.endTime} onChange={(e) => setEditItemDraft(prev => ({...prev, endTime: e.target.value}))} style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+            <div style={{ display: "grid", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Judul Aktivitas</label>
+                <input type="text" value={editItemDraft.title} onChange={(e) => setEditItemDraft(prev => ({...prev, title: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
               </div>
-              <select value={editItemDraft.activityType} onChange={(e) => setEditItemDraft(prev => ({...prev, activityType: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-                <option value="sightseeing">Sightseeing</option>
-                <option value="dining">Dining</option>
-                <option value="cafe">Cafe</option>
-                <option value="hotel">Hotel</option>
-                <option value="flight">Flight</option>
-                <option value="other">Other</option>
-              </select>
-              <textarea placeholder="Catatan" value={editItemDraft.notes} onChange={(e) => setEditItemDraft(prev => ({...prev, notes: e.target.value}))} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", minHeight: "80px" }} />
+              
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Lokasi</label>
+                <input type="text" value={editItemDraft.locationName} onChange={(e) => setEditItemDraft(prev => ({...prev, locationName: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+              </div>
+
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Waktu Mulai</label>
+                  <input type="time" value={editItemDraft.startTime} onChange={(e) => setEditItemDraft(prev => ({...prev, startTime: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Waktu Selesai</label>
+                  <input type="time" value={editItemDraft.endTime} onChange={(e) => setEditItemDraft(prev => ({...prev, endTime: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Kategori</label>
+                <select value={editItemDraft.activityType} onChange={(e) => setEditItemDraft(prev => ({...prev, activityType: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                  <option value="sightseeing">Sightseeing</option>
+                  <option value="dining">Dining</option>
+                  <option value="cafe">Cafe</option>
+                  <option value="hotel">Hotel</option>
+                  <option value="flight">Flight</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Catatan Tambahan</label>
+                <textarea value={editItemDraft.notes} onChange={(e) => setEditItemDraft(prev => ({...prev, notes: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", minHeight: "80px" }} />
+              </div>
             </div>
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem", justifyContent: "flex-end" }}>
               <button type="button" className="btn btn-secondary" onClick={() => { setEditingItemId(null); setEditingItemDayId(null); }} disabled={isSavingItem}>Batal</button>
               <button type="button" className="btn btn-primary" onClick={handleSaveEditedActivity} disabled={isSavingItem}>{isSavingItem ? "Menyimpan..." : "Simpan"}</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus */}
+      {deleteConfirm.isOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem", animation: "fadeIn 0.2s ease-out" }}>
+          <div className="card" style={{ width: "100%", maxWidth: "400px", padding: "1.5rem", animation: "slideUp 0.2s ease-out" }}>
+            <h3 style={{ marginTop: 0, marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "8px", color: "#b91c1c" }}>
+              Konfirmasi Hapus
+            </h3>
+            <p className="text-muted" style={{ marginBottom: "1.5rem", lineHeight: 1.5 }}>
+              Apakah kamu yakin ingin menghapus {deleteConfirm.type === "trip" ? `planner "${deleteConfirm.title}"` : `aktivitas "${deleteConfirm.title}"`}?
+              {deleteConfirm.type === "trip" && " Planner akan dipindahkan ke history."}
+            </p>
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+              <button type="button" className="btn btn-secondary" onClick={() => setDeleteConfirm({ isOpen: false, type: "", id: null, dayId: null, title: "" })} disabled={isDeletingTrip}>Batal</button>
+              <button type="button" className="btn" style={{ backgroundColor: "#ef4444", color: "white", padding: "0.5rem 1.2rem", borderRadius: "100px", border: "none", fontWeight: 600, cursor: isDeletingTrip ? "wait" : "pointer" }} onClick={confirmDeleteAction} disabled={isDeletingTrip}>
+                {isDeletingTrip ? "Menghapus..." : "Ya, Hapus"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Sukses (Diedit / Dihapus) */}
+      {successModal.isOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem", animation: "fadeIn 0.2s ease-out" }}>
+          <div className="card" style={{ width: "100%", maxWidth: "350px", padding: "2.5rem 1.5rem", animation: "slideUp 0.2s ease-out", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#d1fae5", color: "#10b981", marginBottom: "1rem" }}>
+              <CheckCircle2 size={36} />
+            </div>
+            <h3 style={{ margin: "0 0 0.5rem 0", color: "var(--text-main)", fontSize: "1.25rem" }}>Berhasil!</h3>
+            <p className="text-muted" style={{ margin: 0, fontSize: "1rem" }}>{successModal.message}</p>
           </div>
         </div>
       )}

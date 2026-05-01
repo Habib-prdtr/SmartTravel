@@ -159,97 +159,40 @@ export default function TripForm() {
 
       <form 
         onSubmit={handleGenerate} 
-        className="hero-search-box" 
-        style={{ 
-          flexDirection: mode === "ai" ? "column" : "row",
-          borderRadius: mode === "ai" ? "24px" : "var(--radius-full)",
-          padding: mode === "ai" ? "1.5rem 1.5rem 1.25rem 1.5rem" : "0.75rem"
-        }}
+        className={`hero-search-box ${mode === "ai" ? "hero-search-box--ai" : "hero-search-box--manual"}`}
       >
         {mode === "manual" ? (
           <div className="search-inputs">
             <div className="input-group">
-              <MapPin className="input-icon" size={22} />
-              <div className="input-field-wrapper" style={{ position: "relative" }}>
-                <label>Tujuan</label>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "0.3rem" }}>
+                <MapPin size={14} style={{ color: "var(--primary)" }} /> Tujuan
+              </label>
+              <div style={{ position: "relative" }}>
                 <input
                   type="text"
-                  placeholder="Cari kota/tempat nyata..."
+                  placeholder="Cari kota atau tempat..."
                   required={mode === "manual"}
                   value={destinationInput}
                   onChange={(e) => {
                     setDestinationInput(e.target.value);
                     setSelectedPlace(null);
                   }}
+                  style={{ border: "none", background: "transparent", width: "100%", fontSize: "0.98rem", fontWeight: 500, color: "var(--text-main)", outline: "none", fontFamily: "inherit", padding: 0 }}
                 />
                 {canSearch && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "calc(100% + 0.4rem)",
-                      left: 0,
-                      right: 0,
-                      backgroundColor: "var(--surface)",
-                      border: "1px solid var(--border-color)",
-                      borderRadius: "10px",
-                      boxShadow: "var(--shadow-md)",
-                      maxHeight: "320px",
-                      overflowY: "auto",
-                      zIndex: 20
-                    }}
-                  >
+                  <div style={{ position: "absolute", top: "calc(100% + 0.4rem)", left: 0, right: 0, backgroundColor: "var(--surface)", border: "1px solid var(--border-color)", borderRadius: "10px", boxShadow: "var(--shadow-md)", maxHeight: "280px", overflowY: "auto", zIndex: 20 }}>
                     {isSearching ? (
-                      <p style={{ margin: 0, padding: "0.65rem 0.75rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                        Mencari lokasi...
-                      </p>
+                      <p style={{ margin: 0, padding: "0.65rem 0.75rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>Mencari lokasi...</p>
                     ) : suggestions.length === 0 ? (
-                      <p style={{ margin: 0, padding: "0.65rem 0.75rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                        Tidak ada hasil.
-                      </p>
+                      <p style={{ margin: 0, padding: "0.65rem 0.75rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>Tidak ada hasil.</p>
                     ) : (
                       suggestions.map((place) => (
-                        <button
-                          key={place.place_id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedPlace(place);
-                            setDestinationInput(toDestinationLabel(place));
-                            setSuggestions([]);
-                          }}
-                          style={{
-                            width: "100%",
-                            border: "none",
-                            background: "transparent",
-                            textAlign: "left",
-                            padding: "0.85rem 0.85rem",
-                            cursor: "pointer",
-                            borderBottom: "1px solid var(--border-color)"
-                          }}
+                        <button key={place.place_id} type="button"
+                          onClick={() => { setSelectedPlace(place); setDestinationInput(toDestinationLabel(place)); setSuggestions([]); }}
+                          style={{ width: "100%", border: "none", background: "transparent", textAlign: "left", padding: "0.75rem", cursor: "pointer", borderBottom: "1px solid var(--border-color)" }}
                         >
-                          <span
-                            style={{
-                              display: "block",
-                              fontSize: "0.87rem",
-                              fontWeight: 600,
-                              color: "var(--text-main)",
-                              whiteSpace: "normal",
-                              lineHeight: 1.35
-                            }}
-                          >
-                            {toPlaceParts(place).primary}
-                          </span>
-                          <span
-                            style={{
-                              display: "block",
-                              marginTop: "0.3rem",
-                              fontSize: "0.78rem",
-                              color: "var(--text-muted)",
-                              whiteSpace: "normal",
-                              lineHeight: 1.35
-                            }}
-                          >
-                            {toPlaceParts(place).secondary}
-                          </span>
+                          <span style={{ display: "block", fontSize: "0.87rem", fontWeight: 600, color: "var(--text-main)" }}>{toPlaceParts(place).primary}</span>
+                          <span style={{ display: "block", marginTop: "0.2rem", fontSize: "0.78rem", color: "var(--text-muted)" }}>{toPlaceParts(place).secondary}</span>
                         </button>
                       ))
                     )}
@@ -258,24 +201,22 @@ export default function TripForm() {
               </div>
             </div>
 
-            <div className="divider" />
-
             <div className="input-group">
-              <CalendarDays className="input-icon" size={22} />
-              <div className="input-field-wrapper">
-                <label>Tanggal</label>
-                <input type="date" required={mode === "manual"} value={date} onChange={(e) => setDate(e.target.value)} />
-              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "0.3rem" }}>
+                <CalendarDays size={14} style={{ color: "var(--primary)" }} /> Tanggal
+              </label>
+              <input type="date" required={mode === "manual"} value={date} onChange={(e) => setDate(e.target.value)}
+                style={{ border: "none", background: "transparent", width: "100%", fontSize: "0.98rem", fontWeight: 500, color: "var(--text-main)", outline: "none", fontFamily: "inherit", padding: 0 }}
+              />
             </div>
 
-            <div className="divider" />
-
             <div className="input-group">
-              <Wallet className="input-icon" size={22} />
-              <div className="input-field-wrapper">
-                <label>Budget</label>
-                <input type="number" placeholder="Rp 0" value={budget} onChange={(e) => setBudget(e.target.value)} />
-              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "0.3rem" }}>
+                <Wallet size={14} style={{ color: "var(--primary)" }} /> Budget
+              </label>
+              <input type="number" placeholder="Rp 0 (opsional)" value={budget} onChange={(e) => setBudget(e.target.value)}
+                style={{ border: "none", background: "transparent", width: "100%", fontSize: "0.98rem", fontWeight: 500, color: "var(--text-main)", outline: "none", fontFamily: "inherit", padding: 0 }}
+              />
             </div>
           </div>
         ) : (
@@ -327,28 +268,17 @@ export default function TripForm() {
           disabled={isSubmitting}
           style={{ 
             backgroundColor: mode === "ai" ? "#8b5cf6" : "var(--primary)",
-            width: mode === "ai" ? "fit-content" : "auto",
-            alignSelf: mode === "ai" ? "flex-end" : "auto",
-            marginTop: mode === "ai" ? "1rem" : "0",
-            padding: mode === "ai" ? "0.75rem 1.5rem" : "0 2.5rem",
-            borderRadius: "var(--radius-full)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.5rem",
-            fontSize: mode === "ai" ? "1rem" : "1.05rem",
-            boxShadow: mode === "ai" ? "0 4px 14px rgba(139, 92, 246, 0.3)" : "none",
+            boxShadow: mode === "ai" ? "0 4px 14px rgba(139, 92, 246, 0.3)" : "0 4px 14px rgba(59,130,246,0.2)",
+            color: "white",
             border: "none",
             cursor: isSubmitting ? "not-allowed" : "pointer",
-            transition: "all 0.2s ease"
+            opacity: isSubmitting ? 0.7 : 1,
           }}
-          onMouseOver={(e) => { if(mode === "ai" && !isSubmitting) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(139, 92, 246, 0.4)"; } }}
-          onMouseOut={(e) => { if(mode === "ai") { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(139, 92, 246, 0.3)"; } }}
         >
           <Sparkles size={18} /> 
           {isSubmitting 
-            ? (mode === "ai" ? "Menyusun..." : "Menyimpan...") 
-            : (mode === "ai" ? "Generate AI" : "Mulai Rencana")}
+            ? (mode === "ai" ? "Menyusun itinerary..." : "Menyimpan...") 
+            : (mode === "ai" ? "✨ Generate dengan AI" : "Mulai Rencana →")}
         </button>
       </form>
     </div>

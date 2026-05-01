@@ -93,3 +93,36 @@ export async function me(req, res, next) {
     return next(error);
   }
 }
+
+export async function updateProfile(req, res, next) {
+  try {
+    const { name, email } = req.body;
+    const userId = req.user.id;
+
+    if (!name || !email) {
+      return res.status(400).json({ message: "Name and email are required" });
+    }
+
+    // Check if new email is already used by another user
+    const [existing] = await pool.query("SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1", [email, userId]);
+    if (existing.length > 0) {
+      return res.status(409).json({ message: "Email already in use by another account" });
+    }
+
+    // Update user
+    await pool.query("UPDATE users SET name = ?, email = ? WHERE id = ?", [name, email, userId]);
+
+    const updatedUser = {
+      id: userId,
+      name,
+      email
+    };
+
+    // Issue a new token with updated payload
+    const token = createToken(updatedUser);
+    
+    return res.status(200).json({ token, user: updatedUser });
+  } catch (error) {
+    return next(error);
+  }
+}

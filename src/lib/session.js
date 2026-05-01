@@ -26,6 +26,10 @@ export function clearSession() {
   localStorage.removeItem(USER_KEY);
 }
 
+export function updateSessionUser(user) {
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
 export function isAuthenticated() {
   return Boolean(getToken());
 }

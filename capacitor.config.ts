@@ -5,6 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Smart Travel',
   webDir: 'dist',
   server: {
+    androidScheme: 'http',
     cleartext: true
   }
 };

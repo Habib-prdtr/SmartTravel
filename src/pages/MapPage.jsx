@@ -346,11 +346,11 @@ export default function MapPage() {
             <select
               value={selectedTripId || ""}
               onChange={(e) => setSelectedTripId(Number(e.target.value))}
-              style={{ width: "100%", marginBottom: "0.7rem", padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "var(--surface)", fontSize: "0.9rem" }}
+              style={{ width: "100%", marginBottom: "0.7rem", padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "var(--surface)", fontSize: "0.9rem" }}
             >
               {trips.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
-            <div style={{ display: "flex", alignItems: "center", backgroundColor: "var(--bg-color)", padding: "0.6rem 1rem", borderRadius: "var(--radius-full)", border: "1px solid var(--border-color)" }}>
+            <div style={{ display: "flex", alignItems: "center", backgroundColor: "var(--bg-color)", padding: "0.6rem 1rem", borderRadius: "var(--radius-full)", border: "1px solid var(--primary)" }}>
               <Search size={15} color="var(--text-muted)" style={{ marginRight: "0.5rem", flexShrink: 0 }} />
               <input
                 type="text" placeholder="Cari lokasi..." value={query}

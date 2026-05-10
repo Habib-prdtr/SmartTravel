@@ -505,7 +505,7 @@ export default function Planner() {
 
   if (isLoadingTrips) {
     return (
-      <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+      <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
         <p className="text-muted">Memuat planner...</p>
       </div>
     );
@@ -513,7 +513,7 @@ export default function Planner() {
 
   if (trips.length === 0) {
     return (
-      <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+      <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
         <div className="card" style={{ maxWidth: "640px", margin: "0 auto", padding: "2rem", textAlign: "center" }}>
           <h2 style={{ marginBottom: "0.75rem" }}>Belum Ada Trip</h2>
           <p className="text-muted" style={{ marginBottom: "1.25rem" }}>
@@ -528,7 +528,7 @@ export default function Planner() {
   }
 
   return (
-    <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+    <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "2rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
         <span>Home</span> <ChevronRight size={14} /> <span>Planner</span> <ChevronRight size={14} />{" "}
         <span style={{ color: "var(--primary)", fontWeight: 500 }}>{selectedTrip?.name || "Trip"}</span>
@@ -600,7 +600,7 @@ export default function Planner() {
         </div>
 
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
-          <select value={selectedTripId || ""} onChange={(e) => setSelectedTripId(Number(e.target.value))} style={{ minWidth: "220px", padding: "0.55rem 0.8rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}>
+          <select value={selectedTripId || ""} onChange={(e) => setSelectedTripId(Number(e.target.value))} style={{ minWidth: "220px", padding: "0.55rem 0.8rem", borderRadius: "10px", border: "1px solid var(--primary)" }}>
             {trips.map((trip) => (
               <option key={trip.id} value={trip.id}>
                 {trip.name}
@@ -622,10 +622,10 @@ export default function Planner() {
           >
             Hapus Planner
           </button>
-          <button type="button" onClick={handleDownloadPdf} style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "white", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-main)", cursor: "pointer", transition: "all 0.2s" }} title="Download PDF">
+          <button type="button" className="btn-secondary" onClick={handleDownloadPdf} style={{ width: "40px", height: "40px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, transition: "all 0.2s" }} title="Download PDF">
             <Download size={18} />
           </button>
-          <button type="button" onClick={handlePrint} style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "white", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-main)", cursor: "pointer", transition: "all 0.2s" }} title="Print Itinerary">
+          <button type="button" className="btn-secondary" onClick={handlePrint} style={{ width: "40px", height: "40px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, transition: "all 0.2s" }} title="Print Itinerary">
             <Printer size={18} />
           </button>
         </div>
@@ -674,7 +674,7 @@ export default function Planner() {
                   <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "end" }}>
                     <div style={{ minWidth: "180px", flex: "1" }}>
                       <label style={{ display: "block", fontSize: "0.82rem", marginBottom: "0.3rem", color: "var(--text-muted)" }}>Tanggal Hari Ini</label>
-                      <input type="date" value={dayDateDrafts[day.id] || ""} onChange={(e) => setDayDateDrafts((prev) => ({ ...prev, [day.id]: e.target.value }))} style={{ width: "100%", padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                      <input type="date" value={dayDateDrafts[day.id] || ""} onChange={(e) => setDayDateDrafts((prev) => ({ ...prev, [day.id]: e.target.value }))} style={{ width: "100%", padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
                     </div>
                     <button type="button" className="btn btn-secondary" onClick={() => handleSaveDayDate(day)} disabled={savingDayId === day.id} style={{ padding: "0.55rem 0.9rem" }}>
                       {savingDayId === day.id ? "Menyimpan..." : "Simpan Tanggal"}
@@ -684,11 +684,11 @@ export default function Planner() {
                   <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem" }}>
                     <p style={{ margin: "0 0 0.7rem 0", fontWeight: 600 }}>Tambah Aktivitas Hari {day.day_number}</p>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.6rem" }}>
-                      <input type="text" placeholder="Judul aktivitas" value={draft.title} onChange={(e) => handleDraftChange(day.id, "title", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-                      <input type="text" placeholder="Lokasi" value={draft.locationName} onChange={(e) => handleDraftChange(day.id, "locationName", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-                      <input type="time" value={draft.startTime} onChange={(e) => handleDraftChange(day.id, "startTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-                      <input type="time" value={draft.endTime} onChange={(e) => handleDraftChange(day.id, "endTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
-                      <select value={draft.activityType} onChange={(e) => handleDraftChange(day.id, "activityType", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                      <input type="text" placeholder="Judul aktivitas" value={draft.title} onChange={(e) => handleDraftChange(day.id, "title", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
+                      <input type="text" placeholder="Lokasi" value={draft.locationName} onChange={(e) => handleDraftChange(day.id, "locationName", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
+                      <input type="time" value={draft.startTime} onChange={(e) => handleDraftChange(day.id, "startTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
+                      <input type="time" value={draft.endTime} onChange={(e) => handleDraftChange(day.id, "endTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
+                      <select value={draft.activityType} onChange={(e) => handleDraftChange(day.id, "activityType", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }}>
                         <option value="sightseeing">Sightseeing</option>
                         <option value="dining">Dining</option>
                         <option value="cafe">Cafe</option>
@@ -696,7 +696,7 @@ export default function Planner() {
                         <option value="flight">Flight</option>
                         <option value="other">Other</option>
                       </select>
-                      <input type="text" placeholder="Catatan" value={draft.notes} onChange={(e) => handleDraftChange(day.id, "notes", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                      <input type="text" placeholder="Catatan" value={draft.notes} onChange={(e) => handleDraftChange(day.id, "notes", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
                     </div>
                     <button type="button" className="btn btn-primary" onClick={() => handleAddActivity(day)} disabled={savingActivityDayId === day.id} style={{ marginTop: "0.7rem" }}>
                       {savingActivityDayId === day.id ? "Menyimpan..." : "+ Tambah Aktivitas"}
@@ -730,28 +730,28 @@ export default function Planner() {
             <div style={{ display: "grid", gap: "1rem" }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Judul Aktivitas</label>
-                <input type="text" value={editItemDraft.title} onChange={(e) => setEditItemDraft(prev => ({...prev, title: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                <input type="text" value={editItemDraft.title} onChange={(e) => setEditItemDraft(prev => ({...prev, title: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
               </div>
               
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Lokasi</label>
-                <input type="text" value={editItemDraft.locationName} onChange={(e) => setEditItemDraft(prev => ({...prev, locationName: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                <input type="text" value={editItemDraft.locationName} onChange={(e) => setEditItemDraft(prev => ({...prev, locationName: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
               </div>
 
               <div style={{ display: "flex", gap: "1rem" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Waktu Mulai</label>
-                  <input type="time" value={editItemDraft.startTime} onChange={(e) => setEditItemDraft(prev => ({...prev, startTime: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                  <input type="time" value={editItemDraft.startTime} onChange={(e) => setEditItemDraft(prev => ({...prev, startTime: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Waktu Selesai</label>
-                  <input type="time" value={editItemDraft.endTime} onChange={(e) => setEditItemDraft(prev => ({...prev, endTime: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }} />
+                  <input type="time" value={editItemDraft.endTime} onChange={(e) => setEditItemDraft(prev => ({...prev, endTime: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
                 </div>
               </div>
 
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Kategori</label>
-                <select value={editItemDraft.activityType} onChange={(e) => setEditItemDraft(prev => ({...prev, activityType: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                <select value={editItemDraft.activityType} onChange={(e) => setEditItemDraft(prev => ({...prev, activityType: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }}>
                   <option value="sightseeing">Sightseeing</option>
                   <option value="dining">Dining</option>
                   <option value="cafe">Cafe</option>
@@ -763,7 +763,7 @@ export default function Planner() {
 
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Catatan Tambahan</label>
-                <textarea value={editItemDraft.notes} onChange={(e) => setEditItemDraft(prev => ({...prev, notes: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", minHeight: "80px" }} />
+                <textarea value={editItemDraft.notes} onChange={(e) => setEditItemDraft(prev => ({...prev, notes: e.target.value}))} style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--primary)", minHeight: "80px" }} />
               </div>
             </div>
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem", justifyContent: "flex-end" }}>

@@ -155,7 +155,7 @@ export default function Budget() {
 
   if (isLoading && trips.length === 0) {
     return (
-      <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+      <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
         <p className="text-muted">Memuat data budget...</p>
       </div>
     );
@@ -163,7 +163,7 @@ export default function Budget() {
 
   if (trips.length === 0) {
     return (
-      <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+      <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
         <div className="card" style={{ maxWidth: "640px", margin: "0 auto", padding: "2rem", textAlign: "center" }}>
           <h2 style={{ marginBottom: "0.75rem" }}>Belum Ada Trip</h2>
           <p className="text-muted" style={{ marginBottom: "1.25rem" }}>
@@ -178,7 +178,7 @@ export default function Budget() {
   }
 
   return (
-    <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+    <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginBottom: "2rem", flexWrap: "wrap" }}>
         <div
           style={{
@@ -206,7 +206,7 @@ export default function Budget() {
         <select
           value={selectedTripId || ""}
           onChange={(e) => setSelectedTripId(Number(e.target.value))}
-          style={{ minWidth: "240px", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}
+          style={{ minWidth: "240px", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)" }}
         >
           {trips.map((trip) => (
             <option key={trip.id} value={trip.id}>
@@ -223,7 +223,7 @@ export default function Budget() {
       )}
 
       {!budget && (
-        <div className="card" style={{ marginBottom: "1.5rem", borderLeft: "4px solid #f59e0b" }}>
+        <div className="card" style={{ marginBottom: "1.5rem", borderLeft: "4px solid var(--accent)" }}>
           <p style={{ margin: 0, color: "var(--text-main)" }}>
             Anggaran untuk trip ini belum diatur dari halaman Home. Buat trip baru lewat Generate Itinerary dan isi budget.
           </p>
@@ -263,7 +263,7 @@ export default function Budget() {
             <select
               value={expenseForm.category}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, category: e.target.value }))}
-              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}
+              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--primary)" }}
             >
               {Object.entries(CATEGORY_META).map(([value, meta]) => (
                 <option key={value} value={value}>
@@ -276,27 +276,27 @@ export default function Budget() {
               placeholder="Judul pengeluaran"
               value={expenseForm.title}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, title: e.target.value }))}
-              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}
+              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--primary)" }}
             />
             <input
               type="number"
               placeholder="Nominal"
               value={expenseForm.amount}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, amount: e.target.value }))}
-              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}
+              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--primary)" }}
             />
             <input
               type="date"
               value={expenseForm.expenseDate}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, expenseDate: e.target.value }))}
-              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}
+              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--primary)" }}
             />
             <input
               type="text"
               placeholder="Catatan (opsional)"
               value={expenseForm.notes}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, notes: e.target.value }))}
-              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--border-color)" }}
+              style={{ padding: "0.6rem 0.75rem", borderRadius: "10px", border: "1px solid var(--primary)" }}
             />
             <button type="submit" className="btn btn-secondary" disabled={isSavingExpense}>
               {isSavingExpense ? "Menyimpan..." : "+ Tambah Pengeluaran"}

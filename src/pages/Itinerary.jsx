@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain, Pencil, Trash2 } from 'lucide-react';
+import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain, Pencil, Trash2, Calendar } from 'lucide-react';
 
 export function ItineraryActivity({ id, time, title, description, type, duration, weatherAlert, onEdit, onDelete }) {
   // Menentukan ikon dan warna berdasarkan tipe aktivitas
@@ -56,45 +56,64 @@ export function ItineraryActivity({ id, time, title, description, type, duration
       </div>
 
       {/* Konten Kartu */}
-      <div className="card" style={{ flex: 1, padding: '1.5rem', marginTop: '0.2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-main)', flex: 1 }}>{title}</h4>
+      <div className="card activity-card" style={{ 
+        flex: 1, padding: '1.5rem', marginTop: '0.2rem', 
+        borderLeftColor: getInlineStyles().color,
+        backgroundColor: getInlineStyles().backgroundColor 
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+             <span style={{ 
+               fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', 
+               letterSpacing: '0.75px', color: getInlineStyles().color 
+             }}>
+               {(type || 'other').charAt(0).toUpperCase() + (type || 'other').slice(1)}
+             </span>
+             <h4 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-main)', fontWeight: 700, letterSpacing: '-0.3px' }}>{title}</h4>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ 
               display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', 
-              color: 'var(--text-muted)', backgroundColor: 'var(--bg-color)', 
-              padding: '6px 12px', borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--border-color)'
+              fontWeight: 600, color: 'var(--text-main)', backgroundColor: 'white', 
+              padding: '6px 14px', borderRadius: 'var(--radius-full)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
             }}>
-              <Clock size={14} /> {time}
+              <Clock size={14} color={getInlineStyles().color} /> {time}
             </span>
             {onEdit && (
-              <button onClick={() => onEdit(id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Edit Aktivitas">
-                <Pencil size={16} />
+              <button onClick={() => onEdit(id)} style={{ background: 'white', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'all 0.2s' }} title="Edit Aktivitas">
+                <Pencil size={15} />
               </button>
             )}
             {onDelete && (
-              <button onClick={() => onDelete(id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Hapus Aktivitas">
-                <Trash2 size={16} />
+              <button onClick={() => onDelete(id)} style={{ background: 'white', border: 'none', cursor: 'pointer', color: '#ef4444', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'all 0.2s' }} title="Hapus Aktivitas">
+                <Trash2 size={15} />
               </button>
             )}
           </div>
         </div>
-        <p className="text-muted" style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>{description}</p>
+        
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginTop: '1rem' }}>
+           <MapPin size={16} color={getInlineStyles().color} style={{ marginTop: '3px', flexShrink: 0, opacity: 0.8 }} />
+           <p className="text-muted" style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.6' }}>{description}</p>
+        </div>
         
         {duration && (
-          <div style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--text-light)', fontWeight: 500, display: 'inline-block', backgroundColor: 'var(--surface-hover)', padding: '4px 8px', borderRadius: '6px' }}>
-            Berlangsung: {duration}
+          <div style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: getInlineStyles().color, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'white', padding: '6px 12px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <Clock size={14} /> Berlangsung: {duration}
           </div>
         )}
 
         {weatherAlert && (
           <div style={{ 
-            marginTop: '1rem', padding: '0.75rem 1rem', borderRadius: '8px',
-            backgroundColor: 'var(--accent-soft)', border: '1px solid var(--accent)', color: 'var(--accent)',
-            display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem'
+            marginTop: '1.25rem', padding: '0.85rem 1.25rem', borderRadius: '12px',
+            backgroundColor: 'white', borderLeft: '4px solid var(--accent)', color: 'var(--text-main)',
+            display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
           }}>
-            <CloudRain size={18} style={{ flexShrink: 0 }} />
+            <CloudRain size={20} color="var(--accent)" style={{ flexShrink: 0 }} />
             <span><strong>Peringatan Cuaca:</strong> Hujan diprediksi turun di area ini. Pertimbangkan pindah jadwal.</span>
           </div>
         )}
@@ -107,11 +126,25 @@ export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDe
   return (
     <div style={{ marginBottom: '4rem' }}>
       <div style={{ 
-        display: 'flex', flexDirection: 'column',
-        marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '2px solid var(--border-color)'
+        display: 'flex', alignItems: 'center', gap: '1.25rem',
+        marginBottom: '2.5rem', position: 'relative'
       }}>
-        <h3 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--text-main)', letterSpacing: '-0.5px' }}>Hari {dayNumber}</h3>
-        <span style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '4px' }}>{date}</span>
+        <div style={{
+          backgroundColor: 'var(--primary)', color: 'white',
+          padding: '0.6rem 1.2rem', borderRadius: '14px',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          boxShadow: '0 6px 16px -4px rgba(59, 130, 246, 0.4)'
+        }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, marginBottom: '2px' }}>Hari</span>
+          <span style={{ fontSize: '1.6rem', fontWeight: 800, lineHeight: 1 }}>{dayNumber}</span>
+        </div>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)' }}>Jadwal Perjalanan</h3>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+            <Calendar size={14} /> {date}
+          </span>
+        </div>
+        <div style={{ flex: 1, height: '2px', backgroundColor: 'var(--border-color)', marginLeft: '1rem', borderRadius: '2px' }}></div>
       </div>
       
       <div style={{ paddingTop: '0.5rem' }}>

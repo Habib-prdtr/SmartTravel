@@ -514,12 +514,13 @@ export default function Planner() {
   if (trips.length === 0) {
     return (
       <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
-        <div className="card" style={{ maxWidth: "640px", margin: "0 auto", padding: "2rem", textAlign: "center" }}>
-          <h2 style={{ marginBottom: "0.75rem" }}>Belum Ada Trip</h2>
-          <p className="text-muted" style={{ marginBottom: "1.25rem" }}>
+        <div className="card" style={{ maxWidth: "540px", margin: "0 auto", padding: "3rem 2rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <img src="/planner_empty.png" alt="Empty Planner" style={{ width: "220px", marginBottom: "1.5rem", opacity: 0.9 }} />
+          <h2 style={{ marginBottom: "0.75rem", fontSize: "1.75rem" }}>Belum Ada Trip</h2>
+          <p className="text-muted" style={{ marginBottom: "2rem", lineHeight: 1.6 }}>
             Kamu belum punya data planner. Buat trip dulu dari halaman Home agar itinerary bisa muncul di sini.
           </p>
-          <Link to="/" className="btn btn-primary">
+          <Link to="/" className="btn btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}>
             Buat Trip Pertama
           </Link>
         </div>
@@ -534,7 +535,7 @@ export default function Planner() {
         <span style={{ color: "var(--primary)", fontWeight: 500 }}>{selectedTrip?.name || "Trip"}</span>
       </div>
 
-      <div style={{ background: "linear-gradient(135deg, var(--surface) 0%, var(--primary-soft) 100%)", padding: "2.5rem", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-sm)", marginBottom: "2rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", border: "1px solid var(--border-color)" }}>
+      <div style={{ background: "linear-gradient(135deg, #eff6ff 0%, #ffffff 40%, #fff7ed 100%)", padding: "3rem", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
         <div style={{ flex: "1 1 min-content", minWidth: "300px" }}>
           <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap" }}>
             <span style={{ backgroundColor: "#10b981", color: "white", padding: "0.25rem 0.75rem", borderRadius: "var(--radius-full)", fontSize: "0.75rem", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "4px", letterSpacing: "0.5px" }}>
@@ -681,9 +682,12 @@ export default function Planner() {
                     </button>
                   </div>
 
-                  <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem" }}>
-                    <p style={{ margin: "0 0 0.7rem 0", fontWeight: 600 }}>Tambah Aktivitas Hari {day.day_number}</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.6rem" }}>
+                  <div style={{ marginTop: "2rem", padding: "1.5rem", borderRadius: "16px", backgroundColor: "rgba(248, 250, 252, 0.5)", border: "2px dashed #cbd5e1" }}>
+                    <p style={{ margin: "0 0 1.25rem 0", fontWeight: 700, color: "var(--primary-dark)", display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.05rem" }}>
+                      <span style={{ display: "inline-flex", width: "26px", height: "26px", backgroundColor: "var(--primary-soft)", color: "var(--primary)", borderRadius: "50%", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>+</span>
+                      Rencanakan Aktivitas Baru
+                    </p>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.8rem" }}>
                       <input type="text" placeholder="Judul aktivitas" value={draft.title} onChange={(e) => handleDraftChange(day.id, "title", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
                       <input type="text" placeholder="Lokasi" value={draft.locationName} onChange={(e) => handleDraftChange(day.id, "locationName", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
                       <input type="time" value={draft.startTime} onChange={(e) => handleDraftChange(day.id, "startTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
@@ -707,16 +711,14 @@ export default function Planner() {
             );
           })
         ) : (
-          <div style={{ textAlign: "center", padding: "3rem 0", borderTop: "1px dashed var(--border-color)", marginTop: "2rem" }}>
-            <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "var(--bg-color)", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem" }}>
-              <Calendar size={28} color="var(--primary)" />
-            </div>
-            <h3 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Belum ada hari itinerary</h3>
-            <p className="text-muted" style={{ marginBottom: "1.5rem", maxWidth: "400px", margin: "0 auto 1.5rem" }}>
-              Tambahkan hari pertama agar planner mulai tersusun dari database kamu.
+          <div className="card" style={{ textAlign: "center", padding: "4rem 2rem", marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center", border: "1px dashed var(--border-color)", background: "transparent", boxShadow: "none" }}>
+            <img src="/planner_empty.png" alt="Empty Itinerary" style={{ width: "180px", marginBottom: "1.5rem", opacity: 0.8 }} />
+            <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Belum ada hari itinerary</h3>
+            <p className="text-muted" style={{ marginBottom: "2rem", maxWidth: "450px", margin: "0 auto 2rem", lineHeight: 1.6 }}>
+              Tambahkan hari pertama agar planner mulai tersusun dari database kamu. Atur jadwal perjalananmu dengan mudah di sini.
             </p>
-            <button type="button" className="btn btn-secondary" onClick={handleAddDay} disabled={isAddingDay}>
-              {isAddingDay ? "Menambah..." : "Tambah Hari Pertama"}
+            <button type="button" className="btn btn-primary" onClick={handleAddDay} disabled={isAddingDay} style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}>
+              {isAddingDay ? "Menambah..." : "+ Tambah Hari Pertama"}
             </button>
           </div>
         )}

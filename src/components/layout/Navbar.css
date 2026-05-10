@@ -126,126 +126,87 @@
   
   .nav-brand {
     flex: auto;
+    justify-content: center; /* Center the logo on mobile */
   }
 
   .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-main);
+    display: none;
   }
+}
 
-  /* Professional Premium Sidebar */
-  .mobile-menu-overlay {
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-color);
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-bottom-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 65px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-muted); /* Changed from var(--text-light) for better visibility */
+  flex: 1;
+  height: 100%;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bottom-nav-label {
+  font-size: 0.7rem; /* Slightly larger */
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-item:hover {
+  color: var(--primary);
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+  background-color: var(--primary-soft);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.bottom-nav-item.active .bottom-nav-label {
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
     display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 1000;
-  }
-
-  .mobile-menu-overlay.open {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .mobile-menu-container {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 85%;
-    max-width: 320px;
-    height: 100vh;
-    background-color: var(--surface);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-    z-index: 1001;
-    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .mobile-menu-container.open {
-    right: 0;
-  }
-
-  .mobile-menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .mobile-close-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
-  }
-  
-  .mobile-close-btn:hover {
-    color: var(--text-main);
-  }
-
-  .mobile-nav-links {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem 0;
-  }
-
-  .mobile-nav-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    color: var(--text-main);
-    font-weight: 500;
-    transition: background-color 0.2s;
-    border-left: 3px solid transparent;
-  }
-
-  .mobile-nav-link:hover {
-    background-color: var(--surface-hover);
-  }
-
-  .mobile-nav-link.active {
-    color: var(--primary);
-    background-color: var(--primary-soft);
-    border-left-color: var(--primary);
-  }
-  
-  .mobile-nav-link .chevron {
-    color: var(--text-light);
-    transition: transform 0.2s;
-  }
-  
-  .mobile-nav-link.active .chevron {
-    color: var(--primary);
-  }
-
-  .mobile-nav-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: var(--surface);
-  }
-  
-  .mobile-nav-footer .btn {
-    width: 100%;
-    justify-content: center;
   }
 }

@@ -535,7 +535,7 @@ export default function Planner() {
         <span style={{ color: "var(--primary)", fontWeight: 500 }}>{selectedTrip?.name || "Trip"}</span>
       </div>
 
-      <div style={{ background: "linear-gradient(135deg, #eff6ff 0%, #ffffff 40%, #fff7ed 100%)", padding: "3rem", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
+      <div style={{ background: "linear-gradient(135deg, #eff6ff 0%, #ffffff 40%, #fff7ed 100%)", padding: "clamp(1.5rem, 5vw, 3rem)", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
         <div style={{ flex: "1 1 min-content", minWidth: "300px" }}>
           <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap" }}>
             <span style={{ backgroundColor: "#10b981", color: "white", padding: "0.25rem 0.75rem", borderRadius: "var(--radius-full)", fontSize: "0.75rem", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "4px", letterSpacing: "0.5px" }}>

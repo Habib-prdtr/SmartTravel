@@ -180,7 +180,7 @@ export default function Budget() {
 
   return (
     <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
-      <div style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #ffffff 40%, #f0fdf4 100%)", padding: "3rem", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
+      <div style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #ffffff 40%, #f0fdf4 100%)", padding: "clamp(1.5rem, 5vw, 3rem)", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap", flex: "1 1 min-content", minWidth: "300px" }}>
           <div
             style={{
@@ -234,7 +234,7 @@ export default function Budget() {
       )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem" }}>
-        <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)", color: "white", borderRadius: "20px", boxShadow: "0 12px 24px -8px rgba(5, 150, 105, 0.5)", border: "none", position: "relative", overflow: "hidden", padding: "2rem" }}>
+        <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)", color: "white", borderRadius: "20px", boxShadow: "0 12px 24px -8px rgba(5, 150, 105, 0.5)", border: "none", position: "relative", overflow: "hidden", padding: "clamp(1.5rem, 5vw, 2rem)" }}>
           {/* Decorative shapes */}
           <div style={{ position: "absolute", top: "-20%", right: "-10%", width: "150px", height: "150px", borderRadius: "50%", background: "rgba(255,255,255,0.1)" }}></div>
           <div style={{ position: "absolute", bottom: "-10%", left: "-10%", width: "100px", height: "100px", borderRadius: "50%", background: "rgba(255,255,255,0.05)" }}></div>
@@ -264,7 +264,7 @@ export default function Budget() {
           </div>
         </div>
 
-        <div style={{ padding: "2rem", borderRadius: "20px", backgroundColor: "rgba(248, 250, 252, 0.5)", border: "2px dashed #cbd5e1" }}>
+        <div style={{ padding: "clamp(1.5rem, 5vw, 2rem)", borderRadius: "20px", backgroundColor: "rgba(248, 250, 252, 0.5)", border: "2px dashed #cbd5e1" }}>
           <h3 style={{ fontSize: "1.15rem", marginBottom: "1.25rem", color: "var(--primary-dark)", display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ display: "inline-flex", width: "24px", height: "24px", backgroundColor: "var(--primary-soft)", color: "var(--primary)", borderRadius: "50%", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", fontWeight: "bold" }}>+</span>
             Catat Pengeluaran Baru

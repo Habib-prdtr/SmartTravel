@@ -25,7 +25,6 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    closeMenu();
     if (window.confirm("Apakah kamu yakin ingin keluar?")) {
       clearSession();
       window.dispatchEvent(new Event("storage"));
@@ -34,12 +33,10 @@ export default function Navbar() {
   };
 
   const handleMasuk = () => {
-    closeMenu();
     navigate("/auth");
   };
 
   const handleProfile = () => {
-    closeMenu();
     navigate("/profile");
   };
 
@@ -155,123 +152,6 @@ export default function Navbar() {
               </button>
               <button
                 className="btn btn-primary nav-btn"
-                onClick={() => navigate("/planner")}
-              >
-                Mulai Plan
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Mobile Toggle Button */}
-        <button
-          className="mobile-menu-btn"
-          onClick={toggleMenu}
-          aria-label="Open menu"
-        >
-          <Menu size={28} />
-        </button>
-      </div>
-
-      {/* Mobile Drawer Overlay */}
-      <div
-        className={`mobile-menu-overlay ${isMenuOpen ? "open" : ""}`}
-        onClick={closeMenu}
-      ></div>
-
-      {/* Mobile Drawer Container */}
-      <div className={`mobile-menu-container ${isMenuOpen ? "open" : ""}`}>
-        <div className="mobile-menu-header">
-          <div className="nav-brand">
-            <div className="brand-logo">
-              <Plane size={20} className="brand-icon" />
-            </div>
-            <div className="brand-text-styled" style={{ fontSize: "1.3rem" }}>
-              <span className="smart">Smart</span>
-              <span className="travel">Travel</span>
-            </div>
-          </div>
-          <button
-            className="mobile-close-btn"
-            onClick={closeMenu}
-            aria-label="Close menu"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <div className="mobile-nav-links">
-          <Link
-            to="/"
-            className={`mobile-nav-link ${isActive("/") ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            <span>Home</span>
-            <ChevronRight size={18} className="chevron" />
-          </Link>
-          <Link
-            to="/planner"
-            className={`mobile-nav-link ${isActive("/planner") ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            <span>Planner</span>
-            <ChevronRight size={18} className="chevron" />
-          </Link>
-          <Link
-            to="/map"
-            className={`mobile-nav-link ${isActive("/map") ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            <span>Map</span>
-            <ChevronRight size={18} className="chevron" />
-          </Link>
-          <Link
-            to="/budget"
-            className={`mobile-nav-link ${isActive("/budget") ? "active" : ""}`}
-            onClick={closeMenu}
-          >
-            <span>Budget</span>
-            <ChevronRight size={18} className="chevron" />
-          </Link>
-        </div>
-
-        <div className="mobile-nav-footer">
-          {isLoggedIn ? (
-            <>
-              <button
-                className="btn btn-secondary"
-                onClick={handleProfile}
-                style={{ padding: 0, width: "42px", height: "42px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, margin: "0 auto" }}
-                title="Profil"
-              >
-                <User size={22} />
-              </button>
-              <button
-                className="btn"
-                onClick={handleLogout}
-                style={{
-                  backgroundColor: "#fef2f2",
-                  color: "#ef4444",
-                  border: "1px solid #fee2e2",
-                  borderRadius: "100px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                  fontWeight: 600,
-                  boxShadow: "none",
-                }}
-              >
-                Keluar <LogOut size={18} strokeWidth={2.5} />
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="btn btn-secondary" onClick={handleMasuk}>
-                Masuk
-              </button>
-              <button
-                className="btn btn-primary"
                 onClick={() => navigate("/planner")}
               >
                 Mulai Plan

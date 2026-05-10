@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
+import MobileBottomNav from '../components/layout/MobileBottomNav';
 
 export default function MainLayout() {
   return (
@@ -52,6 +53,7 @@ export default function MainLayout() {
         <Outlet />
       </main>
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }

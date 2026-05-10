@@ -245,3 +245,10 @@ input:-webkit-autofill:active {
   transform: translateY(-2px);
   background-color: var(--surface-hover);
 }
+
+/* Mobile Layout Padding for Bottom Navigation */
+@media (max-width: 768px) {
+  .app-container {
+    padding-bottom: 65px; /* Height of the bottom nav */
+  }
+}

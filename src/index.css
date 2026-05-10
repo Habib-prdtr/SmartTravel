@@ -213,5 +213,35 @@ input:-webkit-autofill:active {
 }
 
 .animate-fade-in {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 1, 1) forwards;
+}
+
+/* Activity Card Hover */
+.activity-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+.activity-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(59, 130, 246, 0.15);
+}
+
+/* Budget Card Hovers */
+.expense-card {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.expense-card:hover {
+  background-color: var(--surface-hover);
+  transform: translateX(4px);
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Map Location Card Hover */
+.map-location-card:hover {
+  transform: translateY(-2px);
+  background-color: var(--surface-hover);
 }

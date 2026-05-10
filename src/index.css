@@ -8,8 +8,8 @@
   --primary-dark: #2563eb;
   
   --secondary: #0ea5e9; /* Light cerulean touch */
-  --accent: #f59e0b; /* Amber accent */
-  --accent-soft: #fef3c7;
+  --accent: #ea580c; /* Sunset Orange accent */
+  --accent-soft: #ffedd5;
 
   --bg-color: #f8fafc; /* Very light slate */
   --surface: #ffffff;
@@ -22,8 +22,8 @@
   --border-color: #e2e8f0;
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 14px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
   --shadow-soft: 0 20px 40px -15px rgba(59, 130, 246, 0.15); /* Soft blue shadow */
   
   --radius-md: 0.75rem;
@@ -135,15 +135,15 @@ button {
 
 .btn-secondary {
   background-color: white;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
+  color: var(--primary);
+  border: 1px solid var(--primary);
   box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
-  background-color: var(--surface-hover);
-  border-color: var(--primary-light);
-  color: var(--primary);
+  background-color: var(--primary-soft);
+  border-color: var(--primary-dark);
+  color: var(--primary-dark);
 }
 
 /* Cards */
@@ -166,6 +166,7 @@ button {
 input:not([type="checkbox"]):not([type="radio"]),
 textarea,
 select {
+  border: 1px solid var(--primary);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -173,8 +174,9 @@ input:not([type="checkbox"]):not([type="radio"]):focus,
 textarea:focus,
 select:focus {
   outline: none !important;
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+  border-color: var(--primary-dark) !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25) !important;
+  background-color: #f8fafc !important;
 }
 
 /* Exceptions for TripForm Search Box */
@@ -186,4 +188,30 @@ select:focus {
 .hero-search-box--ai textarea:focus {
   border-color: #8b5cf6 !important;
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15) !important;
+}
+
+/* Remove Chrome Autofill Background Color */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--bg-color) inset !important;
+    -webkit-text-fill-color: var(--text-main) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

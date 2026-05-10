@@ -273,12 +273,19 @@ export default function TripForm() {
             border: "none",
             cursor: isSubmitting ? "not-allowed" : "pointer",
             opacity: isSubmitting ? 0.7 : 1,
+            ...(mode === "ai" && {
+              width: "auto",
+              alignSelf: "flex-end",
+              padding: "0.75rem 1.75rem",
+              borderRadius: "100px",
+              marginTop: "0.2rem"
+            })
           }}
         >
           <Sparkles size={18} /> 
           {isSubmitting 
             ? (mode === "ai" ? "Menyusun itinerary..." : "Menyimpan...") 
-            : (mode === "ai" ? "✨ Generate dengan AI" : "Mulai Rencana →")}
+            : (mode === "ai" ? "Generate AI" : "Mulai Rencana →")}
         </button>
       </form>
     </div>

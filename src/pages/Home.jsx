@@ -12,12 +12,12 @@ function formatDate(dateValue) {
 
 export default function Home() {
   return (
-    <div className="home-page">
+    <div className="home-page animate-fade-in">
       <section className="hero-section">
         <div className="hero-background" />
         <div className="container hero-container">
           <div className="hero-content">
-            <span className="badge">AI-Powered Travel Planner</span>
+            <span className="badge hero-badge">AI-Powered Travel Planner</span>
             <h1 className="hero-title">Rencanakan Liburan Impianmu Secara Otomatis</h1>
             <p className="hero-subtitle">
               SmartTravel membantu menyusun itinerary harian, mencari tempat wisata, dan mengestimasi biaya dengan
@@ -31,7 +31,7 @@ export default function Home() {
 
       <section className="features-section container">
         <div className="section-header">
-          <span className="badge text-primary" style={{ backgroundColor: "var(--primary-soft)", border: "none", marginBottom: "1rem" }}>
+          <span className="badge" style={{ marginBottom: "1rem", border: "1px solid var(--accent)" }}>
             Fitur Utama
           </span>
           <h2>Mengapa Memilih SmartTravel?</h2>

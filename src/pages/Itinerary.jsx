@@ -91,7 +91,7 @@ export function ItineraryActivity({ id, time, title, description, type, duration
         {weatherAlert && (
           <div style={{ 
             marginTop: '1rem', padding: '0.75rem 1rem', borderRadius: '8px',
-            backgroundColor: '#fff7ed', border: '1px solid #fdba74', color: '#c2410c',
+            backgroundColor: 'var(--accent-soft)', border: '1px solid var(--accent)', color: 'var(--accent)',
             display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem'
           }}>
             <CloudRain size={18} style={{ flexShrink: 0 }} />

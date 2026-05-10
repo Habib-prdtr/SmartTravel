@@ -161,3 +161,29 @@ button {
   transform: translateY(-4px);
   border-color: rgba(59, 130, 246, 0.1);
 }
+
+/* Global Form Focus Styles */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+}
+
+/* Exceptions for TripForm Search Box */
+.hero-search-box--manual input:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.hero-search-box--ai textarea:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15) !important;
+}

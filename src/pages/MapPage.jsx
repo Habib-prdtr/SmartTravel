@@ -342,7 +342,7 @@ export default function MapPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 5rem)", overflow: "hidden" }}>
+    <div className="map-page-container" style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 5rem)", overflow: "hidden" }}>
       {/* Mobile tab switcher */}
       <div className="map-tab-switcher" style={{ display: "none", borderBottom: "1px solid var(--border-color)", backgroundColor: "var(--surface)" }}>
         {[["list", <List size={16} />, "Daftar"], ["map", <Map size={16} />, "Peta"]].map(([v, icon, label]) => (
@@ -581,6 +581,7 @@ export default function MapPage() {
           .map-sidebar { width: 100% !important; flex-shrink: unset; border-right: none !important; }
           .map-sidebar--hidden { display: none !important; }
           .map-area--hidden { display: none !important; }
+          .map-page-container { height: calc(100vh - 5rem - 65px) !important; }
         }
         .leaflet-container { font-family: 'Inter', sans-serif; }
       `}} />

@@ -1,24 +1,26 @@
 /**
- * weather.js — Helper untuk mengambil data ramalan cuaca menggunakan Open-Meteo API
- * Open-Meteo 100% gratis dan tidak memerlukan API Key.
+ * weather.js — Helper untuk mengambil data ramalan cuaca menggunakan WeatherAPI.com
  */
 
-const OPEN_METEO_BASE = "https://api.open-meteo.com/v1/forecast";
+// URL endpoint untuk ramalan (forecast) dari WeatherAPI
+const WEATHER_API_BASE = "https://api.weatherapi.com/v1/forecast.json";
 
 /**
- * Cek apakah kode cuaca WMO (World Meteorological Organization) mengindikasikan hujan/buruk.
- * Kode >= 51 umumnya adalah hujan ringan hingga badai petir.
- * @param {number} code
- * @returns {boolean}
+ * Cek apakah kondisi cuaca mengindikasikan hujan/buruk berdasarkan kode dari WeatherAPI.
+ * WeatherAPI memiliki daftar kode tersendiri, kita kelompokkan yang mengandung hujan/badai.
+ * Referensi kode: https://www.weatherapi.com/docs/weather_conditions.json
  */
 export function isRainyWeather(code) {
-  // 51-55: Drizzle, 61-65: Rain, 80-82: Rain showers, 95-99: Thunderstorm
-  const rainyCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
+  // Kode-kode yang berhubungan dengan hujan ringan, deras, salju, hingga badai petir
+  const rainyCodes = [
+    1063, 1066, 1069, 1072, 1150, 1153, 1180, 1183, 1186, 1189, 
+    1192, 1195, 1198, 1201, 1240, 1243, 1246, 1273, 1276
+  ];
   return rainyCodes.includes(code);
 }
 
 /**
- * Mendapatkan ramalan cuaca untuk lokasi dan tanggal tertentu.
+ * Mendapatkan ramalan cuaca untuk lokasi dan tanggal tertentu menggunakan WeatherAPI.
  * @param {number} lat - Latitude
  * @param {number} lon - Longitude
  * @param {string} targetDate - Format YYYY-MM-DD
@@ -27,32 +29,43 @@ export function isRainyWeather(code) {
 export async function checkWeatherForecast(lat, lon, targetDate) {
   if (!lat || !lon || !targetDate) return null;
 
+  // Ambil API Key dari environment variables (Vite)
+  const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+  
+  if (!apiKey) {
+    console.warn("VITE_WEATHER_API_KEY belum disetel di .env!");
+    return null;
+  }
+
   try {
-    // Ambil ramalan cuaca harian (weathercode). Open-Meteo mendukung perkiraan hingga ~16 hari.
-    const url = `${OPEN_METEO_BASE}?latitude=${lat}&longitude=${lon}&daily=weathercode&timezone=auto`;
+    // Parameter 'days=14' untuk mengambil ramalan maksimum
+    // Parameter 'q' menerima "Latitude,Longitude" di WeatherAPI
+    const url = `${WEATHER_API_BASE}?key=${apiKey}&q=${lat},${lon}&days=14`;
     
     const response = await fetch(url);
     if (!response.ok) return null;
 
     const data = await response.json();
-    if (!data.daily || !data.daily.time || !data.daily.weathercode) return null;
+    if (!data.forecast || !data.forecast.forecastday) return null;
 
-    // Cari index tanggal yang sesuai
-    const dateIndex = data.daily.time.findIndex(dateStr => dateStr === targetDate);
+    // Cari data ramalan yang tanggalnya cocok dengan targetDate
+    const forecastDay = data.forecast.forecastday.find(d => d.date === targetDate);
     
-    // Jika tanggal ditemukan dalam rentang ramalan
-    if (dateIndex !== -1) {
-      const weatherCode = data.daily.weathercode[dateIndex];
+    if (forecastDay) {
+      // Ambil kode kondisi cuaca dari properti 'day.condition.code'
+      const weatherCode = forecastDay.day.condition.code;
       return {
         isRainy: isRainyWeather(weatherCode),
-        code: weatherCode
+        code: weatherCode,
+        text: forecastDay.day.condition.text, 
+        icon: forecastDay.day.condition.icon,
+        tempC: forecastDay.day.avgtemp_c
       };
     }
 
-    // Jika tanggal di luar jangkauan ramalan (terlalu jauh di masa depan atau masa lalu)
-    return null;
+    return null; // Tanggal di luar jangkauan ramalan
   } catch (error) {
-    console.error("Gagal mengambil data cuaca:", error);
+    console.error("Gagal mengambil data cuaca dari WeatherAPI:", error);
     return null;
   }
 }

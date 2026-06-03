@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain, Pencil, Trash2, Calendar } from 'lucide-react';
 
-export function ItineraryActivity({ id, time, title, description, type, duration, weatherAlert, onEdit, onDelete }) {
+export function ItineraryActivity({ id, time, title, description, type, duration, weatherData, onEdit, onDelete }) {
   // Menentukan ikon dan warna berdasarkan tipe aktivitas
   const getIcon = () => {
     switch (type) {
@@ -106,15 +106,26 @@ export function ItineraryActivity({ id, time, title, description, type, duration
           </div>
         )}
 
-        {weatherAlert && (
+        {weatherData && (
           <div style={{ 
             marginTop: '1.25rem', padding: '0.85rem 1.25rem', borderRadius: '12px',
-            backgroundColor: 'white', borderLeft: '4px solid var(--accent)', color: 'var(--text-main)',
+            backgroundColor: weatherData.isRainy ? '#fff1f2' : '#f0fdf4',
+            borderLeft: `4px solid ${weatherData.isRainy ? '#e11d48' : '#16a34a'}`,
+            color: 'var(--text-main)',
             display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem',
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
           }}>
-            <CloudRain size={20} color="var(--accent)" style={{ flexShrink: 0 }} />
-            <span><strong>Peringatan Cuaca:</strong> Hujan diprediksi turun di area ini. Pertimbangkan pindah jadwal.</span>
+            {weatherData.icon ? (
+              <img src={`https:${weatherData.icon}`} alt={weatherData.text} style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+            ) : (
+              <CloudRain size={24} color={weatherData.isRainy ? '#e11d48' : '#16a34a'} style={{ flexShrink: 0 }} />
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontWeight: 600 }}>Cuaca: {weatherData.text} ({weatherData.tempC}°C)</span>
+              {weatherData.isRainy && (
+                <span style={{ fontSize: '0.8rem', color: '#e11d48' }}>Hujan diprediksi turun. Pertimbangkan pindah jadwal.</span>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -158,7 +169,7 @@ export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDe
               description={act.description}
               type={act.type}
               duration={act.duration}
-              weatherAlert={act.weatherAlert}
+              weatherData={act.weatherData}
               onEdit={onEditActivity}
               onDelete={onDeleteActivity}
             />

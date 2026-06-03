@@ -24,9 +24,10 @@ export function isRainyWeather(code) {
  * @param {number} lat - Latitude
  * @param {number} lon - Longitude
  * @param {string} targetDate - Format YYYY-MM-DD
- * @returns {Promise<{ isRainy: boolean, code: number } | null>}
+ * @param {string} targetTime - Opsional, format HH:MM atau HH:MM:SS
+ * @returns {Promise<{ isRainy: boolean, code: number, text: string, icon: string, tempC: number } | null>}
  */
-export async function checkWeatherForecast(lat, lon, targetDate) {
+export async function checkWeatherForecast(lat, lon, targetDate, targetTime) {
   if (!lat || !lon || !targetDate) return null;
 
   // Ambil API Key dari environment variables (Vite)
@@ -52,14 +53,26 @@ export async function checkWeatherForecast(lat, lon, targetDate) {
     const forecastDay = data.forecast.forecastday.find(d => d.date === targetDate);
     
     if (forecastDay) {
-      // Ambil kode kondisi cuaca dari properti 'day.condition.code'
-      const weatherCode = forecastDay.day.condition.code;
+      let condition = forecastDay.day.condition;
+      let tempC = forecastDay.day.avgtemp_c;
+
+      if (targetTime) {
+        // targetTime bisa jadi "08:00:00", kita ambil "08"
+        const hourPrefix = String(targetTime).substring(0, 2);
+        const targetHourStr = `${targetDate} ${hourPrefix}:00`;
+        const hourData = forecastDay.hour.find(h => h.time === targetHourStr);
+        if (hourData) {
+          condition = hourData.condition;
+          tempC = hourData.temp_c;
+        }
+      }
+
       return {
-        isRainy: isRainyWeather(weatherCode),
-        code: weatherCode,
-        text: forecastDay.day.condition.text, 
-        icon: forecastDay.day.condition.icon,
-        tempC: forecastDay.day.avgtemp_c
+        isRainy: isRainyWeather(condition.code),
+        code: condition.code,
+        text: condition.text, 
+        icon: condition.icon,
+        tempC: tempC
       };
     }
 

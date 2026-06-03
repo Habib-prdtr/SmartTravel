@@ -1,5 +1,5 @@
 import express from "express";
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 import { pool } from "../db.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -13,12 +13,15 @@ router.post("/generate", authMiddleware, async (req, res) => {
     return res.status(400).json({ message: "Prompt tidak boleh kosong" });
   }
 
-  if (!process.env.GEMINI_API_KEY) {
-    return res.status(500).json({ message: "Konfigurasi server error: GEMINI_API_KEY belum disetel" });
+  if (!process.env.GROQ_API_KEY) {
+    return res.status(500).json({ message: "Konfigurasi server error: GROQ_API_KEY belum disetel" });
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const openai = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY,
+      baseURL: "https://api.groq.com/openai/v1"
+    });
 
     // Instruksi sistem yang ketat untuk mengembalikan JSON schema yang kita inginkan
     const systemPrompt = `Kamu adalah AI Travel Assistant ahli. 
@@ -60,17 +63,17 @@ Pastikan jam (startTime/endTime) berurutan dari pagi ke malam dalam satu hari.
 Pastikan total expenses tidak melebihi budget (jika user memberikan budget).
 Pastikan destinasi yang direkomendasikan masuk akal (lokasi saling berdekatan dalam satu area/kota jika di hari yang sama).`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.7,
-        responseMimeType: "application/json"
-      }
+    const response = await openai.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt }
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7
     });
 
-    const jsonText = response.text;
+    const jsonText = response.choices[0].message.content;
     
     let tripData;
     try {
@@ -198,9 +201,9 @@ Pastikan destinasi yang direkomendasikan masuk akal (lokasi saling berdekatan da
   } catch (error) {
     console.error("AI Generation Error:", error);
     
-    // Handle specific Gemini API errors
-    if (error.status === 503 || error.message?.includes("high demand") || error.message?.includes("UNAVAILABLE")) {
-      return res.status(503).json({ message: "Server AI (Gemini) sedang mengalami beban tinggi (High Demand). Silakan coba klik tombol Generate sekali lagi." });
+    // Handle specific Groq API errors
+    if (error.status === 429 || error.message?.includes("rate limit") || error.status === 503) {
+      return res.status(503).json({ message: "Server AI (Groq) sedang mengalami batas antrean. Silakan coba klik tombol Generate sekali lagi." });
     }
     
     res.status(500).json({ message: "Gagal men-generate itinerary dengan AI. Silakan coba prompt yang lebih spesifik." });

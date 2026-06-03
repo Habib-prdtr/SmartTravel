@@ -195,29 +195,26 @@ export default function Planner() {
         // Ensure valid date format YYYY-MM-DD
         let targetDate;
         try {
-          targetDate = new Date(day.date).toISOString().slice(0, 10);
+          const d = new Date(day.date);
+          targetDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         } catch {
           continue;
         }
         
         const items = itemsByDayId[day.id] || [];
         for (const item of items) {
-          // Check if it's sightseeing, has location, and we haven't checked it yet
-          if (item.activity_type === "sightseeing" && item.location_name && newAlerts[item.id] === undefined) {
+          // Check if it has location, and we haven't checked it yet
+          if (item.location_name && newAlerts[item.id] === undefined) {
             try {
               // 1. Geocode location name to coordinates
               const coords = await geocodeLocation(item.location_name);
               if (coords) {
-                // 2. Fetch weather forecast from Open-Meteo
-                const weather = await checkWeatherForecast(coords.lat, coords.lon, targetDate);
-                if (weather && weather.isRainy) {
-                  newAlerts[item.id] = true; // Show rain alert
-                } else {
-                  newAlerts[item.id] = false; // Safe weather
-                }
+                // 2. Fetch weather forecast from WeatherAPI
+                const weather = await checkWeatherForecast(coords.lat, coords.lon, targetDate, item.start_time);
+                newAlerts[item.id] = weather || null; // Simpan seluruh objek cuaca
                 hasChanges = true;
               } else {
-                newAlerts[item.id] = false; // Geocoding failed, mark as checked
+                newAlerts[item.id] = null; // Geocoding failed, mark as checked
                 hasChanges = true;
               }
             } catch (err) {
@@ -651,7 +648,7 @@ export default function Planner() {
               description: item.notes || item.location_name || "Tidak ada deskripsi",
               type: item.activity_type || "sightseeing",
               duration: item.end_time ? `Selesai ${String(item.end_time).slice(0, 5)}` : "",
-              weatherAlert: weatherAlerts[item.id] || false
+              weatherData: weatherAlerts[item.id] || null
             }));
             const draft = activityDraftByDayId[day.id] || { title: "", locationName: "", startTime: "", endTime: "", activityType: "sightseeing", notes: "" };
 

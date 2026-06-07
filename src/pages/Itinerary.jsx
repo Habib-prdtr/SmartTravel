@@ -1,7 +1,7 @@
 import React from 'react';
-import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain, Pencil, Trash2, Calendar } from 'lucide-react';
+import { Clock, MapPin, Coffee, Utensils, Home, Camera, Plane, CloudRain, Pencil, Trash2, Calendar, Map } from 'lucide-react';
 
-export function ItineraryActivity({ id, time, title, description, type, duration, weatherData, onEdit, onDelete }) {
+export function ItineraryActivity({ id, time, title, description, type, duration, weatherData, onEdit, onDelete, onMapClick }) {
   // Menentukan ikon dan warna berdasarkan tipe aktivitas
   const getIcon = () => {
     switch (type) {
@@ -82,6 +82,11 @@ export function ItineraryActivity({ id, time, title, description, type, duration
             }}>
               <Clock size={14} color={getInlineStyles().color} /> {time}
             </span>
+            {onMapClick && (
+              <button onClick={() => onMapClick(id)} style={{ background: 'white', border: 'none', cursor: 'pointer', color: 'var(--primary)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'all 0.2s' }} title="Buka di Peta">
+                <Map size={15} />
+              </button>
+            )}
             {onEdit && (
               <button onClick={() => onEdit(id)} style={{ background: 'white', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'all 0.2s' }} title="Edit Aktivitas">
                 <Pencil size={15} />
@@ -133,7 +138,7 @@ export function ItineraryActivity({ id, time, title, description, type, duration
   );
 }
 
-export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDeleteActivity }) {
+export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDeleteActivity, onMapActivity }) {
   return (
     <div style={{ marginBottom: '4rem' }}>
       <div style={{ 
@@ -172,6 +177,7 @@ export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDe
               weatherData={act.weatherData}
               onEdit={onEditActivity}
               onDelete={onDeleteActivity}
+              onMapClick={onMapActivity}
             />
           ))
         ) : (

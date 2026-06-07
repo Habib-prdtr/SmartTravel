@@ -3,7 +3,7 @@ import { pool } from "../db.js";
 export async function getTrips(req, res, next) {
   try {
     const [rows] = await pool.query(
-      `SELECT id, user_id, name, destination, start_date, end_date, notes, created_at, deleted_at
+      `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
        FROM trips
        WHERE user_id = ? AND deleted_at IS NULL
        ORDER BY id DESC`,
@@ -18,7 +18,7 @@ export async function getTrips(req, res, next) {
 export async function getTripHistory(req, res, next) {
   try {
     const [rows] = await pool.query(
-      `SELECT id, user_id, name, destination, start_date, end_date, notes, created_at, deleted_at
+      `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
        FROM trips
        WHERE user_id = ? AND deleted_at IS NOT NULL
        ORDER BY deleted_at DESC, id DESC`,
@@ -33,7 +33,7 @@ export async function getTripHistory(req, res, next) {
 export async function createTrip(req, res, next) {
   let conn;
   try {
-    const { name, destination, startDate, endDate, notes, totalBudget, currency } = req.body;
+    const { name, destination, startDate, endDate, notes, hobby, totalBudget, currency } = req.body;
 
     if (!name || !destination) {
       return res.status(400).json({ message: "name and destination are required" });
@@ -49,8 +49,8 @@ export async function createTrip(req, res, next) {
     await conn.beginTransaction();
 
     const [result] = await conn.query(
-      "INSERT INTO trips (user_id, name, destination, start_date, end_date, notes) VALUES (?, ?, ?, ?, ?, ?)",
-      [req.user.id, name, destination, startDate || null, endDate || null, notes || null]
+      "INSERT INTO trips (user_id, name, destination, start_date, end_date, notes, hobby) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [req.user.id, name, destination, startDate || null, endDate || null, notes || null, hobby || null]
     );
 
     if (typeof totalBudget === "number" && totalBudget >= 0) {
@@ -71,6 +71,7 @@ export async function createTrip(req, res, next) {
       startDate: startDate || null,
       endDate: endDate || null,
       notes: notes || null,
+      hobby: hobby || null,
       totalBudget: typeof totalBudget === "number" && totalBudget >= 0 ? totalBudget : null,
       currency: currency || "IDR"
     });
@@ -94,7 +95,7 @@ export async function getTripById(req, res, next) {
     }
 
     const [rows] = await pool.query(
-      `SELECT id, user_id, name, destination, start_date, end_date, notes, created_at, deleted_at
+      `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
        FROM trips
        WHERE id = ? AND user_id = ? AND deleted_at IS NULL
        LIMIT 1`,

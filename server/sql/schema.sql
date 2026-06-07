@@ -114,6 +114,7 @@ CREATE TABLE `trips` (
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `notes` text,
+  `hobby` varchar(255) DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

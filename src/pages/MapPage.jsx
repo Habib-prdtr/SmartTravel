@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Map, Navigation, Search, Star, List, Route, X, Loader } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -145,6 +145,10 @@ export default function MapPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const location = useLocation();
+  const autoRouteLocId = location.state?.autoRouteLocId;
+  const autoRouteHandled = useRef(false);
+
   // Routing state
   const [activeLocId, setActiveLocId] = useState(null);
   const [routeInfo, setRouteInfo] = useState(null);       // { geometry, distance, duration }
@@ -238,7 +242,19 @@ export default function MapPage() {
     setDestCoords(null);
     setUserCoords(null);
     setRouteError("");
+    autoRouteHandled.current = false; // reset when trip changes
   }, [selectedTripId]);
+
+  // Handle auto-routing from Planner
+  useEffect(() => {
+    if (locations.length > 0 && autoRouteLocId && !autoRouteHandled.current) {
+      const targetLoc = locations.find((l) => l.id === autoRouteLocId);
+      if (targetLoc) {
+        autoRouteHandled.current = true;
+        handleArahkanRute(targetLoc);
+      }
+    }
+  }, [locations, autoRouteLocId]);
 
   // Main: handle "Arahkan Rute" button
   async function handleArahkanRute(loc) {

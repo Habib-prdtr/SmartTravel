@@ -526,8 +526,9 @@ export default function Planner() {
   }
 
   return (
-    <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "2rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
+    <>
+      <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "2rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
         <span>Home</span> <ChevronRight size={14} /> <span>Planner</span> <ChevronRight size={14} />{" "}
         <span style={{ color: "var(--primary)", fontWeight: 500 }}>{selectedTrip?.name || "Trip"}</span>
       </div>
@@ -588,7 +589,7 @@ export default function Planner() {
           )}
 
           <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-            <button type="button" className="btn btn-primary" style={{ padding: "0.6rem 1.5rem", display: "flex", alignItems: "center", gap: "8px" }}>
+            <button type="button" onClick={() => navigate("/map", { state: { trip: selectedTrip } })} className="btn btn-primary" style={{ padding: "0.6rem 1.5rem", display: "flex", alignItems: "center", gap: "8px" }}>
               <Map size={18} /> Peta Rute
             </button>
             <button type="button" className="btn btn-secondary" style={{ padding: "0.6rem 1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -666,6 +667,9 @@ export default function Planner() {
                     const item = dayItems.find(i => i.id === itemId);
                     if(item) triggerDeleteActivity(day.id, itemId, item.title || "Aktivitas ini");
                   }}
+                  onMapActivity={(itemId) => {
+                    navigate("/map", { state: { trip: selectedTrip, autoRouteLocId: `${day.id}-${itemId}` } });
+                  }}
                 />
 
                 <div className="card" style={{ marginTop: "-2.5rem", marginBottom: "2rem", padding: "1rem 1.25rem", display: "grid", gap: "0.75rem" }}>
@@ -719,6 +723,7 @@ export default function Planner() {
             </button>
           </div>
         )}
+      </div>
       </div>
 
       {/* Modal Edit Activity */}
@@ -806,6 +811,6 @@ export default function Planner() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

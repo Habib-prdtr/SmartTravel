@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
 import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer, History } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";

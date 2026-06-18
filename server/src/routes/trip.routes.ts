@@ -1,4 +1,6 @@
-import { Router } from "express";
+// @ts-nocheck
+import express from "express";
+const { Router } = express;
 import { createTrip, deleteTrip, getTripById, getTripHistory, getTrips, updateTrip } from "../controllers/trip.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 

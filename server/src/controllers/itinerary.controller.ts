@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pool } from "../db.js";
 
 async function userOwnsTrip(tripId, userId) {

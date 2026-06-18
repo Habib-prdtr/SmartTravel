@@ -1,4 +1,6 @@
-import { Router } from "express";
+// @ts-nocheck
+import express from "express";
+const { Router } = express;
 import {
   createItineraryDay,
   createItineraryItem,

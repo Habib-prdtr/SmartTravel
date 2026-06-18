@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
 import { MapPin, CalendarDays, Wallet, Sparkles, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";

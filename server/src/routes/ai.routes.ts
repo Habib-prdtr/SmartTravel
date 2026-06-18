@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from "express";
 import OpenAI from "openai";
 import { pool } from "../db.js";

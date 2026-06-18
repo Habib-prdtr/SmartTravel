@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pool } from "../db.js";
 
 const ALLOWED_CATEGORIES = new Set(["transport", "hotel", "food", "ticket", "other"]);

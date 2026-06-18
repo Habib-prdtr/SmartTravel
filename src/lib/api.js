@@ -4,7 +4,10 @@ import { Capacitor } from "@capacitor/core";
 // Di Android Emulator, localhost mengarah ke emulator itu sendiri.
 // 10.0.2.2 adalah IP khusus untuk mengakses localhost milik laptop/host.
 const isNative = Capacitor.isNativePlatform();
-let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+// Jika di HP (via Vite server), kita gunakan relative path ('') agar proxy Vite yang menangani,
+// sehingga tidak diblokir oleh Windows Firewall.
+let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (isNative ? "http://10.0.2.2:5000" : "");
 
 // Override khusus untuk Android Emulator jika tertulis localhost
 if (isNative && API_BASE_URL.includes("localhost")) {

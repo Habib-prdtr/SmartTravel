@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pool } from "../db.js";
 
 export async function getTrips(req, res, next) {

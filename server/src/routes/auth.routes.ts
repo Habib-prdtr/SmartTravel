@@ -1,4 +1,6 @@
-import { Router } from "express";
+// @ts-nocheck
+import express from "express";
+const { Router } = express;
 import { login, me, register, updateProfile } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 

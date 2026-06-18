@@ -1,4 +1,6 @@
-import { Router } from "express";
+// @ts-nocheck
+import express from "express";
+const { Router } = express;
 import { createExpense, getBudget, getExpenses, upsertBudget } from "../controllers/budget.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 

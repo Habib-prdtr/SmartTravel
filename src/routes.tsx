@@ -10,7 +10,7 @@ import Profile from './pages/Profile';
 import History from './pages/History';
 import { isAuthenticated } from './lib/session';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!isAuthenticated()) {
     return <Navigate to="/auth" replace />;
   }
@@ -18,7 +18,7 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function PublicOnlyRoute({ children }) {
+function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
   if (isAuthenticated()) {
     return <Navigate to="/" replace />;
   }

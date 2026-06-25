@@ -18,14 +18,30 @@ export async function getTrips(req, res, next) {
 
 export async function getTripHistory(req, res, next) {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const offset = (page - 1) * limit;
+
     const [rows] = await pool.query(
       `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
        FROM trips
        WHERE user_id = ? AND deleted_at IS NOT NULL
-       ORDER BY deleted_at DESC, id DESC`,
+       ORDER BY deleted_at DESC, id DESC
+       LIMIT ? OFFSET ?`,
+      [req.user.id, limit, offset]
+    );
+
+    const [countRows] = await pool.query(
+      `SELECT COUNT(id) as total FROM trips WHERE user_id = ? AND deleted_at IS NOT NULL`,
       [req.user.id]
     );
-    return res.status(200).json(rows);
+    const total = countRows[0].total;
+    const totalPages = Math.ceil(total / limit);
+
+    return res.status(200).json({
+      data: rows,
+      meta: { page, limit, total, totalPages }
+    });
   } catch (error) {
     return next(error);
   }

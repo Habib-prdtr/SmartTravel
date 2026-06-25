@@ -1,7 +1,25 @@
 // @ts-nocheck
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
 import { pool } from "../db.js";
+
+// Skema Validasi Input
+const registerSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter").max(100, "Nama maksimal 100 karakter"),
+  email: z.string().email("Format email tidak valid"),
+  password: z.string().min(6, "Password minimal 6 karakter").max(255),
+});
+
+const loginSchema = z.object({
+  email: z.string().email("Format email tidak valid"),
+  password: z.string().min(1, "Password wajib diisi"),
+});
+
+const updateProfileSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter").max(100),
+  email: z.string().email("Format email tidak valid"),
+});
 
 function createToken(user) {
   return jwt.sign(
@@ -16,11 +34,12 @@ function createToken(user) {
 
 export async function register(req, res, next) {
   try {
-    const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "name, email, and password are required" });
+    const parseResult = registerSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ message: parseResult.error.errors[0].message });
     }
+    
+    const { name, email, password } = parseResult.data;
 
     const [existing] = await pool.query("SELECT id FROM users WHERE email = ? LIMIT 1", [email]);
     if (existing.length > 0) {
@@ -49,11 +68,12 @@ export async function register(req, res, next) {
 
 export async function login(req, res, next) {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "email and password are required" });
+    const parseResult = loginSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ message: parseResult.error.errors[0].message });
     }
+
+    const { email, password } = parseResult.data;
 
     const [rows] = await pool.query("SELECT id, name, email, password_hash FROM users WHERE email = ? LIMIT 1", [email]);
     if (rows.length === 0) {
@@ -97,12 +117,13 @@ export async function me(req, res, next) {
 
 export async function updateProfile(req, res, next) {
   try {
-    const { name, email } = req.body;
-    const userId = req.user.id;
-
-    if (!name || !email) {
-      return res.status(400).json({ message: "Name and email are required" });
+    const parseResult = updateProfileSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ message: parseResult.error.errors[0].message });
     }
+
+    const { name, email } = parseResult.data;
+    const userId = req.user.id;
 
     // Check if new email is already used by another user
     const [existing] = await pool.query("SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1", [email, userId]);

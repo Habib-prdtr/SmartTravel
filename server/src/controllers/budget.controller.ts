@@ -4,7 +4,7 @@ import { pool } from "../db.js";
 const ALLOWED_CATEGORIES = new Set(["transport", "hotel", "food", "ticket", "other"]);
 
 async function userOwnsTrip(tripId, userId) {
-  const [rows] = await pool.query("SELECT id FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL LIMIT 1", [
+  const [rows] = await pool.query("SELECT id FROM trips WHERE id = ? AND user_id = ? LIMIT 1", [
     tripId,
     userId
   ]);

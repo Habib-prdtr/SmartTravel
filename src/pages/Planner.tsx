@@ -12,6 +12,7 @@ import {
   getItineraryDays,
   getItineraryItems,
   getTrips,
+  getTripById,
   updateItineraryDay,
   updateTrip,
   updateItineraryItem,
@@ -101,20 +102,33 @@ export default function Planner() {
         const tripRows = await getTrips();
         if (!isMounted) return;
 
-        setTrips(tripRows);
+        let allTrips = [...tripRows];
+        
+        if (newTripId && !allTrips.some((trip) => trip.id === Number(newTripId))) {
+          try {
+            const specificTrip = await getTripById(Number(newTripId));
+            if (specificTrip) {
+              allTrips.push(specificTrip);
+            }
+          } catch (err) {
+            console.error("Failed to fetch deleted/specific trip", err);
+          }
+        }
 
-        if (tripRows.length === 0) {
+        setTrips(allTrips);
+
+        if (allTrips.length === 0) {
           setSelectedTripId(null);
           return;
         }
 
-        if (newTripId && tripRows.some((trip) => trip.id === Number(newTripId))) {
+        if (newTripId && allTrips.some((trip) => trip.id === Number(newTripId))) {
           setSelectedTripId(Number(newTripId));
           return;
         }
 
         setSelectedTripId((currentId) => {
-          if (currentId && tripRows.some((trip) => trip.id === Number(currentId))) {
+          if (currentId && allTrips.some((trip) => trip.id === Number(currentId))) {
             return Number(currentId);
           }
           return tripRows[0].id;
@@ -518,9 +532,14 @@ export default function Planner() {
           <p className="text-muted" style={{ marginBottom: "2rem", lineHeight: 1.6 }}>
             Kamu belum punya data planner. Buat trip dulu dari halaman Home agar itinerary bisa muncul di sini.
           </p>
-          <Link to="/" className="btn btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}>
-            Buat Trip Pertama
-          </Link>
+          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+            <Link to="/" className="btn btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}>
+              Buat Trip Pertama
+            </Link>
+            <Link to="/history" className="btn btn-secondary" style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}>
+              Lihat History
+            </Link>
+          </div>
         </div>
       </div>
     );

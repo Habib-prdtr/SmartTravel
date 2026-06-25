@@ -114,7 +114,7 @@ export async function getTripById(req, res, next) {
     const [rows] = await pool.query(
       `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
        FROM trips
-       WHERE id = ? AND user_id = ? AND deleted_at IS NULL
+       WHERE id = ? AND user_id = ?
        LIMIT 1`,
       [tripId, req.user.id]
     );

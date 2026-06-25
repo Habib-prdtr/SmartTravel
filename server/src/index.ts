@@ -8,6 +8,7 @@ import tripRoutes from "./routes/trip.routes.js";
 import itineraryRoutes from "./routes/itinerary.routes.js";
 import budgetRoutes from "./routes/budget.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
+import { rateLimit } from "express-rate-limit";
 
 dotenv.config();
 
@@ -23,6 +24,18 @@ app.get("/health", (_req, res) => {
     service: "smarttravel-api"
   });
 });
+
+// Terapkan Rate Limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 menit
+  max: 100, // Maksimal 100 request per IP setiap 15 menit
+  message: { message: "Terlalu banyak request dari IP Anda, silakan coba lagi setelah 15 menit." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Terapkan ke semua rute API
+app.use("/api/", apiLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripRoutes);

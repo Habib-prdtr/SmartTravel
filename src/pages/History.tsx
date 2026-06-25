@@ -15,6 +15,9 @@ export default function History() {
   const [historyTrips, setHistoryTrips] = useState([]);
   const [isLoadingTrips, setIsLoadingTrips] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isFetchingPage, setIsFetchingPage] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,10 +26,11 @@ export default function History() {
       setIsLoadingTrips(true);
       setErrorMessage("");
       try {
-        const [activeRows, historyRows] = await Promise.all([getTrips(), getTripHistory()]);
+        const [activeRows, historyResponse] = await Promise.all([getTrips(), getTripHistory(1)]);
         if (!isMounted) return;
         setActiveTrips(activeRows);
-        setHistoryTrips(historyRows);
+        setHistoryTrips(historyResponse.data || []);
+        setTotalPages(historyResponse.meta?.totalPages || 1);
       } catch (error) {
         if (!isMounted) return;
         setErrorMessage(error.message || "Gagal memuat riwayat trip");
@@ -40,6 +44,20 @@ export default function History() {
       isMounted = false;
     };
   }, []);
+
+  const fetchHistoryPage = async (newPage) => {
+    setIsFetchingPage(true);
+    try {
+      const historyResponse = await getTripHistory(newPage);
+      setHistoryTrips(historyResponse.data || []);
+      setPage(newPage);
+      setTotalPages(historyResponse.meta?.totalPages || 1);
+    } catch (error) {
+      setErrorMessage(error.message || "Gagal memuat halaman history");
+    } finally {
+      setIsFetchingPage(false);
+    }
+  };
 
   return (
     <div className="container" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
@@ -94,15 +112,41 @@ export default function History() {
                 Belum ada planner di history.
               </p>
             ) : (
-              historyTrips.map((trip) => (
-                <div key={trip.id} style={{ padding: "1rem 0", borderTop: "1px solid var(--border-color)" }}>
-                  <strong style={{ display: "block", marginBottom: "0.3rem", fontSize: "1.05rem", color: "var(--text-muted)" }}>{trip.name}</strong>
-                  <span className="text-muted" style={{ display: "block", fontSize: "0.9rem" }}>{trip.destination}</span>
-                  <span style={{ display: "inline-block", marginTop: "0.5rem", fontSize: "0.8rem", color: "#ef4444", backgroundColor: "#fef2f2", padding: "2px 8px", borderRadius: "4px" }}>
-                    Dihapus: {formatDate(trip.deleted_at)}
-                  </span>
-                </div>
-              ))
+              <>
+                {historyTrips.map((trip) => (
+                  <div key={trip.id} style={{ padding: "1rem 0", borderTop: "1px solid var(--border-color)", opacity: isFetchingPage ? 0.5 : 1 }}>
+                    <strong style={{ display: "block", marginBottom: "0.3rem", fontSize: "1.05rem", color: "var(--text-muted)" }}>{trip.name}</strong>
+                    <span className="text-muted" style={{ display: "block", fontSize: "0.9rem" }}>{trip.destination}</span>
+                    <span style={{ display: "inline-block", marginTop: "0.5rem", fontSize: "0.8rem", color: "#ef4444", backgroundColor: "#fef2f2", padding: "2px 8px", borderRadius: "4px" }}>
+                      Dihapus: {formatDate(trip.deleted_at)}
+                    </span>
+                  </div>
+                ))}
+
+                {totalPages > 1 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
+                    <button 
+                      onClick={() => fetchHistoryPage(page - 1)} 
+                      disabled={page === 1 || isFetchingPage}
+                      className="btn btn-secondary" 
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem", opacity: page === 1 ? 0.5 : 1, cursor: page === 1 ? "not-allowed" : "pointer" }}
+                    >
+                      Sebelumnya
+                    </button>
+                    <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                      Hal {page} dari {totalPages}
+                    </span>
+                    <button 
+                      onClick={() => fetchHistoryPage(page + 1)} 
+                      disabled={page === totalPages || isFetchingPage}
+                      className="btn btn-secondary" 
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem", opacity: page === totalPages ? 0.5 : 1, cursor: page === totalPages ? "not-allowed" : "pointer" }}
+                    >
+                      Selanjutnya
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

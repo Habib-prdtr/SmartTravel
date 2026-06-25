@@ -97,8 +97,8 @@ export async function getTrips() {
   return request("/api/trips");
 }
 
-export async function getTripHistory() {
-  return request("/api/trips/history");
+export async function getTripHistory(page = 1) {
+  return request(`/api/trips/history?page=${page}`);
 }
 
 export async function deleteTrip(tripId) {

@@ -19,6 +19,9 @@ const loginSchema = z.object({
 const updateProfileSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").max(100),
   email: z.string().email("Format email tidak valid"),
+  hobby: z.string().optional().nullable(),
+  dietary_preferences: z.string().optional().nullable(),
+  emergency_contact: z.string().optional().nullable(),
 });
 
 function createToken(user) {
@@ -90,6 +93,7 @@ export async function login(req, res, next) {
       id: foundUser.id,
       name: foundUser.name,
       email: foundUser.email
+      // Note: Full user data will be fetched by /me endpoint
     };
 
     const token = createToken(user);
@@ -101,7 +105,7 @@ export async function login(req, res, next) {
 
 export async function me(req, res, next) {
   try {
-    const [rows] = await pool.query("SELECT id, name, email, created_at, updated_at FROM users WHERE id = ? LIMIT 1", [
+    const [rows] = await pool.query("SELECT id, name, email, hobby, dietary_preferences, emergency_contact, created_at, updated_at FROM users WHERE id = ? LIMIT 1", [
       req.user.id
     ]);
 
@@ -122,7 +126,7 @@ export async function updateProfile(req, res, next) {
       return res.status(400).json({ message: parseResult.error.errors[0].message });
     }
 
-    const { name, email } = parseResult.data;
+    const { name, email, hobby, dietary_preferences, emergency_contact } = parseResult.data;
     const userId = req.user.id;
 
     // Check if new email is already used by another user
@@ -132,12 +136,18 @@ export async function updateProfile(req, res, next) {
     }
 
     // Update user
-    await pool.query("UPDATE users SET name = ?, email = ? WHERE id = ?", [name, email, userId]);
+    await pool.query(
+      "UPDATE users SET name = ?, email = ?, hobby = ?, dietary_preferences = ?, emergency_contact = ? WHERE id = ?", 
+      [name, email, hobby || null, dietary_preferences || null, emergency_contact || null, userId]
+    );
 
     const updatedUser = {
       id: userId,
       name,
-      email
+      email,
+      hobby: hobby || null,
+      dietary_preferences: dietary_preferences || null,
+      emergency_contact: emergency_contact || null
     };
 
     // Issue a new token with updated payload

@@ -5,6 +5,26 @@ import { Home, Calendar, Map, Wallet, User } from "lucide-react";
 export default function MobileBottomNav() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
+  const [hidden, setHidden] = React.useState(false);
+
+  React.useEffect(() => {
+    let lastScrollY = window.scrollY;
+    
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Hide on scroll down, show on scroll up
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setHidden(true);
+      } else if (currentScrollY < lastScrollY) {
+        setHidden(false);
+      }
+      lastScrollY = currentScrollY;
+    };
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navItems = [
     { path: "/", label: "Home", icon: <Home size={22} /> },
@@ -15,7 +35,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <nav className="mobile-bottom-nav">
+    <nav className={`mobile-bottom-nav ${hidden ? "nav-hidden-bottom" : ""}`}>
       <div className="mobile-bottom-nav-container">
         {navItems.map((item) => {
           const active = isActive(item.path);

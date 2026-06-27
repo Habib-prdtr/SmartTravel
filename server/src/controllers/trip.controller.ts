@@ -1,13 +1,30 @@
 // @ts-nocheck
 import { pool } from "../db.js";
+import { z } from "zod";
+
+const createTripSchema = z.object({
+  name: z.string().min(2, "Nama trip minimal 2 karakter").max(120),
+  destination: z.string().min(2, "Destinasi minimal 2 karakter").max(120),
+  startDate: z.string().optional().nullable(),
+  endDate: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  totalBudget: z.number().min(0, "Budget tidak boleh negatif").optional().nullable(),
+  currency: z.string().length(3, "Kode mata uang harus 3 huruf").optional().nullable()
+});
+
+const updateTripSchema = z.object({
+  name: z.string().min(2, "Nama trip minimal 2 karakter").max(120),
+  startDate: z.string().optional().nullable(),
+  endDate: z.string().optional().nullable()
+});
 
 export async function getTrips(req, res, next) {
   try {
     const [rows] = await pool.query(
-      `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
+      `SELECT id, user_id, name, destination, start_date, end_date, notes, weather_prediction, packing_list, created_at, deleted_at
        FROM trips
        WHERE user_id = ? AND deleted_at IS NULL
-       ORDER BY id DESC`,
+       ORDER BY start_date ASC`,
       [req.user.id]
     );
     return res.status(200).json(rows);
@@ -23,12 +40,12 @@ export async function getTripHistory(req, res, next) {
     const offset = (page - 1) * limit;
 
     const [rows] = await pool.query(
-      `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
+      `SELECT id, user_id, name, destination, start_date, end_date, notes, created_at, deleted_at
        FROM trips
        WHERE user_id = ? AND deleted_at IS NOT NULL
        ORDER BY deleted_at DESC, id DESC
-       LIMIT ? OFFSET ?`,
-      [req.user.id, limit, offset]
+       LIMIT ${limit} OFFSET ${offset}`,
+      [req.user.id]
     );
 
     const [countRows] = await pool.query(
@@ -50,24 +67,18 @@ export async function getTripHistory(req, res, next) {
 export async function createTrip(req, res, next) {
   let conn;
   try {
-    const { name, destination, startDate, endDate, notes, hobby, totalBudget, currency } = req.body;
-
-    if (!name || !destination) {
-      return res.status(400).json({ message: "name and destination are required" });
+    const parseResult = createTripSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ message: parseResult.error.errors[0].message });
     }
-
-    if (typeof totalBudget !== "undefined" && totalBudget !== null) {
-      if (typeof totalBudget !== "number" || totalBudget < 0) {
-        return res.status(400).json({ message: "totalBudget must be a non-negative number" });
-      }
-    }
+    const { name, destination, startDate, endDate, notes, totalBudget, currency } = parseResult.data;
 
     conn = await pool.getConnection();
     await conn.beginTransaction();
 
     const [result] = await conn.query(
-      "INSERT INTO trips (user_id, name, destination, start_date, end_date, notes, hobby) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [req.user.id, name, destination, startDate || null, endDate || null, notes || null, hobby || null]
+      "INSERT INTO trips (user_id, name, destination, start_date, end_date, notes) VALUES (?, ?, ?, ?, ?, ?)",
+      [req.user.id, name, destination, startDate || null, endDate || null, notes || null]
     );
 
     if (typeof totalBudget === "number" && totalBudget >= 0) {
@@ -88,7 +99,6 @@ export async function createTrip(req, res, next) {
       startDate: startDate || null,
       endDate: endDate || null,
       notes: notes || null,
-      hobby: hobby || null,
       totalBudget: typeof totalBudget === "number" && totalBudget >= 0 ? totalBudget : null,
       currency: currency || "IDR"
     });
@@ -112,7 +122,7 @@ export async function getTripById(req, res, next) {
     }
 
     const [rows] = await pool.query(
-      `SELECT id, user_id, name, destination, start_date, end_date, notes, hobby, created_at, deleted_at
+      `SELECT id, user_id, name, destination, start_date, end_date, notes, weather_prediction, packing_list, created_at, deleted_at
        FROM trips
        WHERE id = ? AND user_id = ?
        LIMIT 1`,
@@ -159,11 +169,11 @@ export async function updateTrip(req, res, next) {
       return res.status(400).json({ message: "Invalid trip id" });
     }
 
-    const { name, startDate, endDate } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: "name is required" });
+    const parseResult = updateTripSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ message: parseResult.error.errors[0].message });
     }
+    const { name, startDate, endDate } = parseResult.data;
 
     const [result] = await pool.query(
       "UPDATE trips SET name = ?, start_date = ?, end_date = ? WHERE id = ? AND user_id = ? AND deleted_at IS NULL",

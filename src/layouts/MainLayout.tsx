@@ -26,7 +26,7 @@ export default function MainLayout() {
           left: 0,
           right: 0,
           height: '600px',
-          background: 'linear-gradient(180deg, var(--primary-soft) 0%, rgba(239, 246, 255, 0) 100%)'
+          background: 'linear-gradient(180deg, var(--primary-soft) 0%, var(--bg-gradient-fade) 100%)'
         }} />
         <div style={{
           position: 'absolute',
@@ -34,7 +34,7 @@ export default function MainLayout() {
           right: '-5%',
           width: '700px',
           height: '700px',
-          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(255, 255, 255, 0) 70%)',
+          background: 'radial-gradient(circle, var(--bg-glow-1) 0%, var(--bg-gradient-fade) 70%)',
           borderRadius: '50%'
         }} />
         <div style={{
@@ -43,7 +43,7 @@ export default function MainLayout() {
           left: '-10%',
           width: '500px',
           height: '500px',
-          background: 'radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, rgba(255, 255, 255, 0) 70%)',
+          background: 'radial-gradient(circle, var(--bg-glow-2) 0%, var(--bg-gradient-fade) 70%)',
           borderRadius: '50%'
         }} />
       </div>

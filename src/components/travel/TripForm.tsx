@@ -2,8 +2,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { MapPin, CalendarDays, Wallet, Sparkles, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { createTrip, searchDestinationPlaces, generateTripWithAI } from "../../lib/api";
-import { isAuthenticated } from "../../lib/session";
+import { createTrip, searchDestinationPlaces, generateTripWithAI, getMe } from "../../lib/api";
+import { isAuthenticated, getUser } from "../../lib/session";
 
 function toPlaceParts(place) {
   const address = place?.address || {};
@@ -44,7 +44,6 @@ export default function TripForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [mode, setMode] = useState("manual"); // "manual" | "ai"
   const [aiPrompt, setAiPrompt] = useState("");
-  const [hobby, setHobby] = useState("");
 
   const canSearch = destinationInput.trim().length >= 3;
 
@@ -99,8 +98,15 @@ export default function TripForm() {
         }
 
         let finalPrompt = aiPrompt.trim();
-        if (hobby.trim()) {
-          finalPrompt += `\n\nCatatan Penting: Pengguna ini memiliki hobi/minat pada "${hobby.trim()}". Tolong pastikan kamu memasukkan aktivitas, destinasi, atau restoran yang sangat relevan dengan hobi ini ke dalam itinerary.`;
+        
+        // Coba ambil hobi dari session atau fetch getMe terbaru
+        try {
+          const userData = await getMe();
+          if (userData && userData.hobby) {
+            finalPrompt += `\n\nCatatan Penting: Pengguna ini memiliki hobi/minat pada "${userData.hobby.trim()}". Tolong pastikan kamu memasukkan aktivitas, destinasi, atau restoran yang sangat relevan dengan hobi ini ke dalam itinerary.`;
+          }
+        } catch (e) {
+          // Abaikan jika gagal mengambil data user, lanjutkan generate
         }
 
         const aiTrip = await generateTripWithAI(finalPrompt);
@@ -124,7 +130,6 @@ export default function TripForm() {
             (selectedPlace?.lat && selectedPlace?.lon
               ? `Lat: ${selectedPlace.lat}, Lon: ${selectedPlace.lon}`
               : "Tidak ada data lokasi"),
-          hobby: hobby.trim() || null,
           totalBudget,
           currency: "IDR"
         });
@@ -228,14 +233,7 @@ export default function TripForm() {
               />
             </div>
 
-            <div className="input-group">
-              <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "0.3rem" }}>
-                <Heart size={14} style={{ color: "var(--primary)" }} /> Hobi / Minat (Opsional)
-              </label>
-              <input type="text" placeholder="Contoh: Kuliner, Alam..." value={hobby} onChange={(e) => setHobby(e.target.value)}
-                style={{ border: "none", background: "transparent", width: "100%", fontSize: "0.98rem", fontWeight: 500, color: "var(--text-main)", outline: "none", fontFamily: "inherit", padding: 0 }}
-              />
-            </div>
+
           </div>
         ) : (
           <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.8rem", textAlign: "left" }}>
@@ -276,16 +274,7 @@ export default function TripForm() {
               ))}
             </div>
 
-            <div style={{ marginTop: "0.5rem" }}>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>
-                <Heart size={14} style={{ color: "#8b5cf6" }} /> Sesuaikan dengan Hobi kamu (Opsional)
-              </label>
-              <input type="text" placeholder="Contoh: Kuliner, Sejarah, Fotografi, Belanja..." value={hobby} onChange={(e) => setHobby(e.target.value)}
-                style={{ width: "100%", padding: "0.8rem 1.2rem", borderRadius: "12px", border: "1px solid #ddd6fe", fontSize: "0.95rem", outline: "none", backgroundColor: "white", transition: "all 0.2s" }}
-                onFocus={(e) => { e.target.style.borderColor = "#8b5cf6"; e.target.style.boxShadow = "0 0 0 2px rgba(139, 92, 246, 0.1)"; }}
-                onBlur={(e) => { e.target.style.borderColor = "#ddd6fe"; e.target.style.boxShadow = "none"; }}
-              />
-            </div>
+
           </div>
         )}
 

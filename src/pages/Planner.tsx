@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
-import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, Printer, History } from "lucide-react";
+import { Calendar, Map, CheckCircle2, ChevronRight, Share2, Download, History, CloudRain, Package } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ItineraryDay } from "./Itinerary";
 import { geocodeLocation } from "../lib/routing";
@@ -18,7 +18,7 @@ import {
   updateItineraryItem,
   deleteItineraryItem
 } from "../lib/api";
-import { downloadSimplePdf } from "../lib/pdf";
+
 
 function formatDate(dateValue) {
   if (!dateValue) return "-";
@@ -60,6 +60,7 @@ export default function Planner() {
   const [itemsByDayId, setItemsByDayId] = useState({});
   const [dayDateDrafts, setDayDateDrafts] = useState({});
   const [activityDraftByDayId, setActivityDraftByDayId] = useState({});
+  const [showActivityFormByDay, setShowActivityFormByDay] = useState({});
   const [isLoadingTrips, setIsLoadingTrips] = useState(true);
   const [isLoadingDays, setIsLoadingDays] = useState(false);
   const [isAddingDay, setIsAddingDay] = useState(false);
@@ -342,6 +343,7 @@ export default function Planner() {
         ...prev,
         [day.id]: { title: "", locationName: "", startTime: "", endTime: "", activityType: "sightseeing", notes: "" }
       }));
+      setShowActivityFormByDay((prev) => ({ ...prev, [day.id]: false }));
     } catch (error) {
       setErrorMessage(error.message || "Gagal menambah aktivitas");
     } finally {
@@ -350,37 +352,8 @@ export default function Planner() {
   };
 
   const handleDownloadPdf = () => {
-    if (!selectedTrip) return;
-
-    const lines = [];
-    lines.push(`Trip: ${selectedTrip.name}`);
-    lines.push(`Periode: ${formatTripDateRange(selectedTrip)}`);
-    lines.push("");
-
-    itineraryDays.forEach((day) => {
-      lines.push(`Hari ${day.day_number} - ${formatDate(day.date)}`);
-      const dayItems = itemsByDayId[day.id] || [];
-      if (dayItems.length === 0) {
-        lines.push("  - Belum ada aktivitas");
-      } else {
-        dayItems.forEach((item, idx) => {
-          const timeLabel = toTimeLabel(item.start_time, item.end_time);
-          lines.push(`  ${idx + 1}. ${timeLabel} | ${item.title}`);
-          if (item.location_name) lines.push(`     Lokasi: ${item.location_name}`);
-          if (item.notes) lines.push(`     Catatan: ${item.notes}`);
-        });
-      }
-      lines.push("");
-    });
-
-    downloadSimplePdf({
-      fileName: `itinerary-${selectedTrip.name.replace(/\s+/g, "-").toLowerCase()}.pdf`,
-      title: "SmartTravel - Itinerary",
-      lines
-    });
+    window.print();
   };
-
-  const handlePrint = () => window.print();
 
   const triggerDeletePlanner = () => {
     if (!selectedTrip) return;
@@ -553,7 +526,7 @@ export default function Planner() {
         <span style={{ color: "var(--primary)", fontWeight: 500 }}>{selectedTrip?.name || "Trip"}</span>
       </div>
 
-      <div style={{ background: "linear-gradient(135deg, #eff6ff 0%, #ffffff 40%, #fff7ed 100%)", padding: "clamp(1.5rem, 5vw, 3rem)", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
+      <div style={{ background: "linear-gradient(135deg, var(--primary-soft) 0%, var(--surface) 40%, var(--accent-soft) 100%)", padding: "clamp(1.5rem, 5vw, 3rem)", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", border: "1px solid var(--border-color)", position: "relative" }}>
         <div style={{ flex: "1 1 min-content", minWidth: "300px" }}>
           <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap" }}>
             <span style={{ backgroundColor: "#10b981", color: "white", padding: "0.25rem 0.75rem", borderRadius: "var(--radius-full)", fontSize: "0.75rem", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "4px", letterSpacing: "0.5px" }}>
@@ -563,7 +536,7 @@ export default function Planner() {
           </div>
 
           {isEditingTrip ? (
-            <div style={{ marginBottom: "1.5rem", display: "grid", gap: "0.5rem", backgroundColor: "white", padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+            <div style={{ marginBottom: "1.5rem", display: "grid", gap: "0.5rem", backgroundColor: "var(--surface)", padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
               <input 
                 type="text" 
                 value={editTripDraft.name} 
@@ -644,9 +617,6 @@ export default function Planner() {
           <button type="button" className="btn-secondary" onClick={handleDownloadPdf} style={{ width: "40px", height: "40px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, transition: "all 0.2s" }} title="Download PDF">
             <Download size={18} />
           </button>
-          <button type="button" className="btn-secondary" onClick={handlePrint} style={{ width: "40px", height: "40px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, transition: "all 0.2s" }} title="Print Itinerary">
-            <Printer size={18} />
-          </button>
         </div>
       </div>
 
@@ -657,6 +627,33 @@ export default function Planner() {
       )}
 
       <div style={{ maxWidth: "850px", margin: "0 auto" }}>
+        
+        {selectedTrip && selectedTrip.packing_list && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
+            {selectedTrip.packing_list && (
+              <div style={{ background: "linear-gradient(145deg, #f5f3ff 0%, #ffffff 100%)", borderRadius: "20px", padding: "2rem", border: "1px solid #ede9fe", boxShadow: "0 10px 25px -5px rgba(139, 92, 246, 0.1)", position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: "-20px", right: "-20px", opacity: 0.05, transform: "rotate(15deg)", pointerEvents: "none" }}>
+                  <Package size={150} color="#8b5cf6" />
+                </div>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", margin: "0 0 1.5rem 0", color: "#5b21b6", fontSize: "1.3rem", fontWeight: 700, position: "relative", zIndex: 1 }}>
+                  <Package size={24} color="#7c3aed" style={{ filter: "drop-shadow(0 2px 4px rgba(124,58,237,0.3))" }} /> AI Packing List
+                </h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem", position: "relative", zIndex: 1 }}>
+                  {(typeof selectedTrip.packing_list === "string" ? JSON.parse(selectedTrip.packing_list) : selectedTrip.packing_list).map((item, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.8rem", backgroundColor: "#ffffff", padding: "0.8rem 1.2rem", borderRadius: "14px", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", cursor: "default" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "#a78bfa"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 10px 15px -3px rgba(139, 92, 246, 0.15)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.02)"; }}>
+                      <div style={{ backgroundColor: "#ede9fe", color: "#7c3aed", borderRadius: "50%", padding: "5px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <CheckCircle2 size={16} strokeWidth={3} />
+                      </div>
+                      <span style={{ fontSize: "0.95rem", color: "#334155", fontWeight: 500, lineHeight: 1.3 }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+
         {isLoadingDays ? (
           <p className="text-muted">Memuat itinerary...</p>
         ) : itineraryDays.length > 0 ? (
@@ -692,42 +689,68 @@ export default function Planner() {
                   }}
                 />
 
-                <div className="card" style={{ marginTop: "-2.5rem", marginBottom: "2rem", padding: "1rem 1.25rem", display: "grid", gap: "0.75rem" }}>
-                  <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "end" }}>
-                    <div style={{ minWidth: "180px", flex: "1" }}>
-                      <label style={{ display: "block", fontSize: "0.82rem", marginBottom: "0.3rem", color: "var(--text-muted)" }}>Tanggal Hari Ini</label>
-                      <input type="date" value={dayDateDrafts[day.id] || ""} onChange={(e) => setDayDateDrafts((prev) => ({ ...prev, [day.id]: e.target.value }))} style={{ width: "100%", padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
-                    </div>
-                    <button type="button" className="btn btn-secondary" onClick={() => handleSaveDayDate(day)} disabled={savingDayId === day.id} style={{ padding: "0.55rem 0.9rem" }}>
-                      {savingDayId === day.id ? "Menyimpan..." : "Simpan Tanggal"}
+                {!showActivityFormByDay[day.id] ? (
+                  <div style={{ marginTop: "0.5rem", marginBottom: "3.5rem", marginLeft: "4.5rem", animation: "enterButton 0.3s ease-out" }}>
+                    <button 
+                      type="button" 
+                      className="btn btn-primary"
+                      onClick={() => setShowActivityFormByDay(prev => ({ ...prev, [day.id]: true }))}
+                      style={{ padding: "0.6rem 1.25rem", fontSize: "0.95rem" }}
+                    >
+                      + Tambah Aktivitas
                     </button>
                   </div>
+                ) : (
+                  <div className="card" style={{ marginTop: "0.5rem", marginBottom: "3.5rem", padding: "1.5rem", borderRadius: "16px", backgroundColor: "var(--surface)", border: "1px solid var(--border-color)", boxShadow: "0 4px 12px rgba(0,0,0,0.03)", animation: "enterForm 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+                      <p style={{ margin: 0, fontWeight: 700, color: "var(--primary-dark)", display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.05rem" }}>
+                        Pengaturan Hari & Tambah Aktivitas
+                      </p>
+                      <button 
+                        type="button" 
+                        onClick={() => setShowActivityFormByDay(prev => ({ ...prev, [day.id]: false }))}
+                        style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.9rem", padding: "0.25rem 0.5rem" }}
+                      >
+                        Tutup
+                      </button>
+                    </div>
 
-                  <div style={{ marginTop: "2rem", padding: "1.5rem", borderRadius: "16px", backgroundColor: "rgba(248, 250, 252, 0.5)", border: "2px dashed #cbd5e1" }}>
-                    <p style={{ margin: "0 0 1.25rem 0", fontWeight: 700, color: "var(--primary-dark)", display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.05rem" }}>
-                      <span style={{ display: "inline-flex", width: "26px", height: "26px", backgroundColor: "var(--primary-soft)", color: "var(--primary)", borderRadius: "50%", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>+</span>
-                      Rencanakan Aktivitas Baru
-                    </p>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.8rem" }}>
-                      <input type="text" placeholder="Judul aktivitas" value={draft.title} onChange={(e) => handleDraftChange(day.id, "title", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
-                      <input type="text" placeholder="Lokasi" value={draft.locationName} onChange={(e) => handleDraftChange(day.id, "locationName", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
-                      <input type="time" value={draft.startTime} onChange={(e) => handleDraftChange(day.id, "startTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
-                      <input type="time" value={draft.endTime} onChange={(e) => handleDraftChange(day.id, "endTime", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
-                      <select value={draft.activityType} onChange={(e) => handleDraftChange(day.id, "activityType", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }}>
-                        <option value="sightseeing">Sightseeing</option>
-                        <option value="dining">Dining</option>
-                        <option value="cafe">Cafe</option>
-                        <option value="hotel">Hotel</option>
-                        <option value="flight">Flight</option>
-                        <option value="other">Other</option>
-                      </select>
-                      <input type="text" placeholder="Catatan" value={draft.notes} onChange={(e) => handleDraftChange(day.id, "notes", e.target.value)} style={{ padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--primary)" }} />
+                    {/* Date Picker Section */}
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "end", borderBottom: "1px solid var(--border-color)", paddingBottom: "1.25rem", marginBottom: "1.25rem" }}>
+                      <div style={{ minWidth: "180px", flex: "1" }}>
+                        <label style={{ display: "block", fontSize: "0.82rem", marginBottom: "0.3rem", color: "var(--text-muted)" }}>Tanggal Hari Ini</label>
+                        <input type="date" value={dayDateDrafts[day.id] || ""} onChange={(e) => setDayDateDrafts((prev) => ({ ...prev, [day.id]: e.target.value }))} style={{ width: "100%", padding: "0.5rem 0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }} />
+                      </div>
+                      <button type="button" className="btn btn-secondary" onClick={() => handleSaveDayDate(day)} disabled={savingDayId === day.id} style={{ padding: "0.55rem 0.9rem" }}>
+                        {savingDayId === day.id ? "Menyimpan..." : "Simpan Tanggal"}
+                      </button>
                     </div>
-                    <button type="button" className="btn btn-primary" onClick={() => handleAddActivity(day)} disabled={savingActivityDayId === day.id} style={{ marginTop: "0.7rem" }}>
-                      {savingActivityDayId === day.id ? "Menyimpan..." : "+ Tambah Aktivitas"}
-                    </button>
+
+                    {/* Activity Form Section */}
+                    <div>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.8rem" }}>
+                        <input type="text" placeholder="Judul aktivitas" value={draft.title} onChange={(e) => handleDraftChange(day.id, "title", e.target.value)} style={{ padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }} />
+                        <input type="text" placeholder="Lokasi" value={draft.locationName} onChange={(e) => handleDraftChange(day.id, "locationName", e.target.value)} style={{ padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }} />
+                        <input type="time" value={draft.startTime} onChange={(e) => handleDraftChange(day.id, "startTime", e.target.value)} style={{ padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }} />
+                        <input type="time" value={draft.endTime} onChange={(e) => handleDraftChange(day.id, "endTime", e.target.value)} style={{ padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }} />
+                        <select value={draft.activityType} onChange={(e) => handleDraftChange(day.id, "activityType", e.target.value)} style={{ padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }}>
+                          <option value="sightseeing">Sightseeing</option>
+                          <option value="dining">Dining</option>
+                          <option value="cafe">Cafe</option>
+                          <option value="hotel">Hotel</option>
+                          <option value="flight">Flight</option>
+                          <option value="other">Other</option>
+                        </select>
+                        <input type="text" placeholder="Catatan" value={draft.notes} onChange={(e) => handleDraftChange(day.id, "notes", e.target.value)} style={{ padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-color)", color: "var(--text-main)" }} />
+                      </div>
+                      <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
+                        <button type="button" className="btn btn-primary" onClick={() => handleAddActivity(day)} disabled={savingActivityDayId === day.id}>
+                          {savingActivityDayId === day.id ? "Menyimpan..." : "Simpan Aktivitas"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })

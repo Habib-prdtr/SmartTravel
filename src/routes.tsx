@@ -8,6 +8,7 @@ import MapPage from './pages/MapPage';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import History from './pages/History';
+import HistoryDetail from './pages/HistoryDetail';
 import { isAuthenticated } from './lib/session';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,7 @@ export default function AppRoutes() {
         <Route path="map" element={<MapPage />} />
         <Route path="budget" element={<Budget />} />
         <Route path="history" element={<History />} />
+        <Route path="history/:id" element={<HistoryDetail />} />
         <Route path="profile" element={<Profile />} />
       </Route>
     </Routes>

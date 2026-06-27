@@ -4,11 +4,11 @@ import { createExpense, getBudget, getExpenses, getTrips } from "../lib/api";
 import { Link } from "react-router-dom";
 
 const CATEGORY_META = {
-  transport: { label: "Transport", icon: <BusFront size={18} />, color: "#6366f1", bg: "#eef2ff" },
-  hotel: { label: "Penginapan", icon: <Home size={18} />, color: "#3b82f6", bg: "#eff6ff" },
-  food: { label: "Makanan", icon: <Utensils size={18} />, color: "#f97316", bg: "#fff7ed" },
-  ticket: { label: "Tiket/Wisata", icon: <Plane size={18} />, color: "#10b981", bg: "#ecfdf5" },
-  other: { label: "Lainnya", icon: <Camera size={18} />, color: "#64748b", bg: "#f1f5f9" }
+  transport: { label: "Transport", icon: <BusFront size={18} />, color: "#6366f1", bg: "rgba(99, 102, 241, 0.12)" },
+  hotel: { label: "Penginapan", icon: <Home size={18} />, color: "#3b82f6", bg: "rgba(59, 130, 246, 0.12)" },
+  food: { label: "Makanan", icon: <Utensils size={18} />, color: "#f97316", bg: "rgba(249, 115, 22, 0.12)" },
+  ticket: { label: "Tiket/Wisata", icon: <Plane size={18} />, color: "#10b981", bg: "rgba(16, 185, 129, 0.12)" },
+  other: { label: "Lainnya", icon: <Camera size={18} />, color: "#64748b", bg: "rgba(100, 116, 139, 0.12)" }
 };
 
 export default function Budget() {
@@ -180,7 +180,7 @@ export default function Budget() {
 
   return (
     <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
-      <div style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #ffffff 40%, #f0fdf4 100%)", padding: "clamp(1.5rem, 5vw, 3rem)", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "2rem", border: "1px solid rgba(255,255,255,0.6)", position: "relative" }}>
+      <div style={{ background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--surface) 40%, rgba(16, 185, 129, 0.05) 100%)", padding: "clamp(1.5rem, 5vw, 3rem)", borderRadius: "24px", boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.1)", marginBottom: "3rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "2rem", border: "1px solid var(--border-color)", position: "relative" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap", flex: "1 1 min-content", minWidth: "300px" }}>
           <div
             style={{
@@ -209,7 +209,7 @@ export default function Budget() {
         <select
           value={selectedTripId || ""}
           onChange={(e) => setSelectedTripId(Number(e.target.value))}
-          style={{ minWidth: "240px", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid #10b981", backgroundColor: "white", color: "var(--text-main)", fontWeight: 600, boxShadow: "0 2px 8px rgba(16,185,129,0.1)" }}
+          style={{ minWidth: "240px", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid #10b981", backgroundColor: "var(--surface)", color: "var(--text-main)", fontWeight: 600, boxShadow: "0 2px 8px rgba(16,185,129,0.1)" }}
         >
           {trips.map((trip) => (
             <option key={trip.id} value={trip.id}>
@@ -273,7 +273,7 @@ export default function Budget() {
             <select
               value={expenseForm.category}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, category: e.target.value }))}
-              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "white" }}
+              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "var(--surface)", color: "var(--text-main)" }}
             >
               {Object.entries(CATEGORY_META).map(([value, meta]) => (
                 <option key={value} value={value}>
@@ -286,27 +286,27 @@ export default function Budget() {
               placeholder="Judul pengeluaran"
               value={expenseForm.title}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, title: e.target.value }))}
-              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "white" }}
+              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "var(--surface)", color: "var(--text-main)" }}
             />
             <input
               type="number"
               placeholder="Nominal"
               value={expenseForm.amount}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, amount: e.target.value }))}
-              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "white" }}
+              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "var(--surface)", color: "var(--text-main)" }}
             />
             <input
               type="date"
               value={expenseForm.expenseDate}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, expenseDate: e.target.value }))}
-              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "white" }}
+              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "var(--surface)", color: "var(--text-main)" }}
             />
             <input
               type="text"
               placeholder="Catatan (opsional)"
               value={expenseForm.notes}
               onChange={(e) => setExpenseForm((prev) => ({ ...prev, notes: e.target.value }))}
-              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "white" }}
+              style={{ padding: "0.7rem 0.85rem", borderRadius: "10px", border: "1px solid var(--primary)", backgroundColor: "var(--surface)", color: "var(--text-main)" }}
             />
             <button type="submit" className="btn btn-primary" disabled={isSavingExpense} style={{ marginTop: "0.5rem", padding: "0.8rem", fontSize: "1.05rem", fontWeight: "bold" }}>
               {isSavingExpense ? "Menyimpan..." : "Tambah Pengeluaran"}
@@ -350,7 +350,7 @@ export default function Budget() {
                       </span>
                     </div>
                   </div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)", backgroundColor: "rgba(248,250,252,0.8)", padding: "6px 12px", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)", backgroundColor: "var(--bg-color)", padding: "6px 12px", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
                     {formatCurrency(Number(trx.amount || 0), budget?.currency || "IDR")}
                   </div>
                 </div>
@@ -364,7 +364,7 @@ export default function Budget() {
         <h3 style={{ marginBottom: "1.5rem", fontSize: "1.25rem" }}>Rincian Alokasi Kategori</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.25rem" }}>
           {categories.map((cat) => (
-            <div key={cat.key} style={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1.25rem", backgroundColor: "white", borderRadius: "16px", border: `1px solid ${cat.color}30`, boxShadow: `0 4px 12px ${cat.color}10`, transition: "transform 0.2s" }} className="category-card">
+            <div key={cat.key} style={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1.25rem", backgroundColor: "var(--surface)", borderRadius: "16px", border: `1px solid ${cat.color}30`, boxShadow: `0 4px 12px ${cat.color}10`, transition: "transform 0.2s" }} className="category-card">
               <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
                 <div style={{ width: "42px", height: "42px", borderRadius: "12px", backgroundColor: cat.bg, color: cat.color, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {cat.icon}

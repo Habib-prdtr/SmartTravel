@@ -25,14 +25,14 @@ export function ItineraryActivity({ id, time, title, description, type, duration
     }
   };
 
-  // Mendapatkan pewarnaan inline jika kita tidak menggunakan tailwind util colors
+  // Mendapatkan pewarnaan inline menggunakan CSS variables untuk mendukung dark mode
   const getInlineStyles = () => {
     switch (type) {
-      case 'dining': return { color: '#f97316', backgroundColor: '#fff7ed' };
-      case 'cafe': return { color: '#d97706', backgroundColor: '#fffbeb' };
-      case 'hotel': return { color: '#3b82f6', backgroundColor: '#eff6ff' };
-      case 'sightseeing': return { color: '#10b981', backgroundColor: '#ecfdf5' };
-      case 'flight': return { color: '#6366f1', backgroundColor: '#eef2ff' };
+      case 'dining': return { color: 'var(--c-dining-text)', backgroundColor: 'var(--c-dining-bg)' };
+      case 'cafe': return { color: 'var(--c-cafe-text)', backgroundColor: 'var(--c-cafe-bg)' };
+      case 'hotel': return { color: 'var(--c-hotel-text)', backgroundColor: 'var(--c-hotel-bg)' };
+      case 'sightseeing': return { color: 'var(--c-sightseeing-text)', backgroundColor: 'var(--c-sightseeing-bg)' };
+      case 'flight': return { color: 'var(--c-flight-text)', backgroundColor: 'var(--c-flight-bg)' };
       default: return { color: 'var(--primary)', backgroundColor: 'var(--primary-soft)' };
     }
   };
@@ -76,7 +76,7 @@ export function ItineraryActivity({ id, time, title, description, type, duration
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ 
               display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', 
-              fontWeight: 600, color: 'var(--text-main)', backgroundColor: 'white', 
+              fontWeight: 600, color: 'var(--text-main)', backgroundColor: 'var(--surface)', 
               padding: '6px 14px', borderRadius: 'var(--radius-full)',
               boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
             }}>
@@ -106,7 +106,7 @@ export function ItineraryActivity({ id, time, title, description, type, duration
         </div>
         
         {duration && (
-          <div style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: getInlineStyles().color, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'white', padding: '6px 12px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: getInlineStyles().color, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--surface)', padding: '6px 12px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <Clock size={14} /> Berlangsung: {duration}
           </div>
         )}
@@ -140,7 +140,7 @@ export function ItineraryActivity({ id, time, title, description, type, duration
 
 export function ItineraryDay({ dayNumber, date, activities, onEditActivity, onDeleteActivity, onMapActivity }) {
   return (
-    <div style={{ marginBottom: '4rem' }}>
+    <div style={{ marginBottom: '1rem' }}>
       <div style={{ 
         display: 'flex', alignItems: 'center', gap: '1.25rem',
         marginBottom: '2.5rem', position: 'relative'

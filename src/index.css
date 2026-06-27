@@ -31,6 +31,84 @@
   --radius-full: 9999px;
 
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Glassmorphism Variables */
+  --glass-nav-bg: rgba(255, 255, 255, 0.7);
+  --glass-nav-scrolled: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(226, 232, 240, 0.4);
+  --glass-pill-bg: rgba(248, 250, 252, 0.8);
+  --glass-pill-hover: #ffffff;
+  
+  /* Decorative background fade */
+  --bg-gradient-fade: rgba(248, 250, 252, 0);
+  --bg-glow-1: rgba(59, 130, 246, 0.08);
+  --bg-glow-2: rgba(14, 165, 233, 0.05);
+
+  /* Activity Colors Light */
+  --c-dining-text: #f97316;
+  --c-dining-bg: #fff7ed;
+  --c-cafe-text: #d97706;
+  --c-cafe-bg: #fffbeb;
+  --c-hotel-text: #3b82f6;
+  --c-hotel-bg: #eff6ff;
+  --c-sightseeing-text: #10b981;
+  --c-sightseeing-bg: #ecfdf5;
+  --c-flight-text: #6366f1;
+  --c-flight-bg: #eef2ff;
+}
+
+/* Dark Mode Variables (Activated ONLY via manual .dark class) */
+
+:root.dark {
+  --primary: #3b82f6; /* Keep consistent brand blue */
+  --primary-light: #60a5fa;
+  --primary-soft: rgba(59, 130, 246, 0.15); /* Soft transparent blue */
+  --primary-dark: #2563eb;
+  
+  --secondary: #0ea5e9;
+  --accent: #ea580c;
+  --accent-soft: rgba(234, 88, 12, 0.15);
+
+  --bg-color: #060b19; /* Deep midnight blue for background */
+  --surface: #0b1226; /* Slightly lighter for cards */
+  --surface-hover: #111c38; /* For hover states */
+
+  --text-main: #f8fafc; /* Crisp white */
+  --text-muted: #8b9bb4; /* Cool soft gray */
+  --text-light: #475569; /* Slate 600 */
+
+  --border-color: rgba(255, 255, 255, 0.08); /* Soft semi-transparent border */
+  
+  --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 2px 8px -1px rgba(0, 0, 0, 0.3);
+  --shadow-soft: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  
+  --glass-nav-bg: rgba(6, 11, 25, 0.75);
+  --glass-nav-scrolled: rgba(6, 11, 25, 0.95);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-pill-bg: rgba(11, 18, 38, 0.8);
+  --glass-pill-hover: rgba(17, 28, 56, 0.9);
+
+  --bg-gradient-fade: rgba(6, 11, 25, 0);
+  --bg-glow-1: rgba(59, 130, 246, 0.08);
+  --bg-glow-2: rgba(14, 165, 233, 0.05);
+
+  /* Activity Colors Dark */
+  --c-dining-text: #fdba74;
+  --c-dining-bg: rgba(249, 115, 22, 0.15);
+  --c-cafe-text: #fcd34d;
+  --c-cafe-bg: rgba(217, 119, 6, 0.15);
+  --c-hotel-text: #60a5fa;
+  --c-hotel-bg: rgba(59, 130, 246, 0.15);
+  --c-sightseeing-text: #34d399;
+  --c-sightseeing-bg: rgba(16, 185, 129, 0.15);
+  --c-flight-text: #818cf8;
+  --c-flight-bg: rgba(99, 102, 241, 0.15);
+}
+
+:root.dark .brand-text-styled .smart { color: white; }
+:root.dark .brand-text-styled .travel { 
+  background: linear-gradient(135deg, #60a5fa, #38bdf8); 
+  -webkit-background-clip: text; 
 }
 
 * {
@@ -166,17 +244,19 @@ button {
 input:not([type="checkbox"]):not([type="radio"]),
 textarea,
 select {
-  border: 1px solid var(--primary);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border-color);
+  background-color: var(--surface);
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):focus,
 textarea:focus,
 select:focus {
   outline: none !important;
-  border-color: var(--primary-dark) !important;
+  border-color: var(--primary) !important;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25) !important;
-  background-color: #f8fafc !important;
+  background-color: var(--bg-color) !important;
 }
 
 /* Exceptions for TripForm Search Box */
@@ -216,6 +296,16 @@ input:-webkit-autofill:active {
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 1, 1) forwards;
 }
 
+@keyframes enterForm {
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes enterButton {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Activity Card Hover */
 .activity-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -250,5 +340,66 @@ input:-webkit-autofill:active {
 @media (max-width: 768px) {
   .app-container {
     padding-bottom: 65px; /* Height of the bottom nav */
+  }
+}
+
+/* Beautiful PDF Print Styles */
+@media print {
+  /* Hide unnecessary UI elements */
+  .navbar, 
+  .mobile-bottom-nav, 
+  footer, 
+  .planner-sidebar, 
+  button, 
+  .btn, 
+  .add-activity-btn,
+  .hero-search-box {
+    display: none !important;
+  }
+
+  /* Reset body and container for printing */
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+  
+  .app-container, .main-content {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Force main content to take full width */
+  .planner-container {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .planner-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Remove shadows and borders to save ink */
+  .card, .activity-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid; /* Prevent card from splitting across pages */
+    margin-bottom: 1rem !important;
+  }
+
+  /* Ensure background colors print (e.g., category badges) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Add margins to page */
+  @page {
+    margin: 1.5cm;
+    size: A4;
   }
 }

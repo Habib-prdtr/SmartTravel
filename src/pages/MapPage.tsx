@@ -386,7 +386,7 @@ export default function MapPage() {
           style={{ width: "380px", flexShrink: 0, backgroundColor: "var(--surface)", borderRight: "1px solid var(--border-color)", display: "flex", flexDirection: "column", overflowY: "hidden" }}
         >
           {/* Header */}
-          <div style={{ padding: "1.5rem", background: "linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)", borderBottom: "1px solid var(--border-color)", position: "relative" }}>
+          <div style={{ padding: "1.5rem", background: "linear-gradient(135deg, var(--primary-soft) 0%, var(--surface) 100%)", borderBottom: "1px solid var(--border-color)", position: "relative" }}>
             <h2 style={{ fontSize: "1.35rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 800, color: "var(--primary-dark)" }}>
               <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "var(--primary)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 10px rgba(59, 130, 246, 0.3)" }}>
                 <Map size={18} />
@@ -396,11 +396,11 @@ export default function MapPage() {
             <select
               value={selectedTripId || ""}
               onChange={(e) => setSelectedTripId(Number(e.target.value))}
-              style={{ width: "100%", marginBottom: "1rem", padding: "0.7rem 0.85rem", borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.3)", backgroundColor: "white", fontSize: "0.95rem", fontWeight: 600, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}
+              style={{ width: "100%", marginBottom: "1rem", padding: "0.7rem 0.85rem", borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.3)", backgroundColor: "var(--surface)", color: "var(--text-main)", fontSize: "0.95rem", fontWeight: 600, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}
             >
               {trips.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
-            <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", padding: "0.7rem 1rem", borderRadius: "var(--radius-full)", border: "1px solid var(--border-color)", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
+            <div style={{ display: "flex", alignItems: "center", backgroundColor: "var(--surface)", padding: "0.7rem 1rem", borderRadius: "var(--radius-full)", border: "1px solid var(--border-color)", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
               <Search size={16} color="var(--primary)" style={{ marginRight: "0.6rem", flexShrink: 0 }} />
               <input
                 type="text" placeholder="Cari destinasi..." value={query}

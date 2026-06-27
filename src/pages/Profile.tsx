@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Calendar, Map, Activity, Edit2, X, CheckCircle2 } from "lucide-react";
+import { User, Mail, Calendar, Map, Activity, Edit2, X, CheckCircle2, Heart, Phone, Coffee } from "lucide-react";
 import { getMe, getTrips, updateProfile } from "../lib/api";
 import { clearSession, saveSession } from "../lib/session";
 
@@ -11,7 +11,7 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({ name: "", email: "" });
+  const [editData, setEditData] = useState({ name: "", email: "", hobby: "", dietary_preferences: "", emergency_contact: "" });
   const [editError, setEditError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -61,7 +61,13 @@ export default function Profile() {
   };
 
   const handleEditClick = () => {
-    setEditData({ name: user.name, email: user.email });
+    setEditData({ 
+      name: user.name || "", 
+      email: user.email || "", 
+      hobby: user.hobby || "", 
+      dietary_preferences: user.dietary_preferences || "", 
+      emergency_contact: user.emergency_contact || "" 
+    });
     setEditError("");
     setIsEditing(true);
   };
@@ -142,6 +148,34 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Profile Details */}
+        <div className="card" style={{ marginBottom: "1.5rem", padding: "1.5rem" }}>
+          <h3 style={{ marginTop: 0, marginBottom: "1rem", fontSize: "1.1rem" }}>Detail Personal</h3>
+          <div style={{ display: "grid", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+              <Heart size={20} color="var(--primary)" style={{ marginTop: "2px" }} />
+              <div>
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 600 }}>Minat / Hobi Wisata</p>
+                <p style={{ margin: "0.2rem 0 0 0", color: "var(--text-main)" }}>{user.hobby || <span style={{ color: "var(--text-light)", fontStyle: "italic" }}>Belum diatur</span>}</p>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+              <Coffee size={20} color="var(--primary)" style={{ marginTop: "2px" }} />
+              <div>
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 600 }}>Preferensi Makanan / Alergi</p>
+                <p style={{ margin: "0.2rem 0 0 0", color: "var(--text-main)" }}>{user.dietary_preferences || <span style={{ color: "var(--text-light)", fontStyle: "italic" }}>Belum diatur</span>}</p>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+              <Phone size={20} color="var(--primary)" style={{ marginTop: "2px" }} />
+              <div>
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 600 }}>Kontak Darurat</p>
+                <p style={{ margin: "0.2rem 0 0 0", color: "var(--text-main)" }}>{user.emergency_contact || <span style={{ color: "var(--text-light)", fontStyle: "italic" }}>Belum diatur</span>}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Statistics / Summary */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
           <div className="card" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -172,6 +206,18 @@ export default function Profile() {
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Alamat Email</label>
                 <input type="email" value={editData.email} onChange={(e) => setEditData({...editData, email: e.target.value})} style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", width: "100%" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Minat / Hobi Wisata (Mis. Alam, Budaya)</label>
+                <input type="text" value={editData.hobby} onChange={(e) => setEditData({...editData, hobby: e.target.value})} placeholder="Misal: Pantai, Gunung, Kuliner" style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", width: "100%" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Preferensi Makanan / Alergi</label>
+                <input type="text" value={editData.dietary_preferences} onChange={(e) => setEditData({...editData, dietary_preferences: e.target.value})} placeholder="Misal: Halal, Vegetarian, Alergi Seafood" style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", width: "100%" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "0.4rem" }}>Kontak Darurat (Nama & Nomor HP)</label>
+                <input type="text" value={editData.emergency_contact} onChange={(e) => setEditData({...editData, emergency_contact: e.target.value})} placeholder="Misal: Budi (Suami) - 0812345678" style={{ padding: "0.6rem", borderRadius: "8px", border: "1px solid var(--border-color)", width: "100%" }} />
               </div>
             </div>
 

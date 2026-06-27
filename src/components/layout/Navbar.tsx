@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Plane, Menu, X, ChevronRight, LogOut, User } from "lucide-react";
+import { Plane, Menu, X, ChevronRight, LogOut, User, Sun, Moon } from "lucide-react";
 import "./Navbar.css";
 import { clearSession, getUser, isAuthenticated } from "../../lib/session";
 
@@ -9,9 +9,30 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
   const [user, setUser] = useState(getUser());
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const isDarkTheme = document.documentElement.classList.contains("dark") || localStorage.getItem("theme") === "dark";
+    if (isDarkTheme) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+    return isDarkTheme;
+  });
+
+  const toggleTheme = () => {
+    if (isDark) {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+      localStorage.setItem("theme", "light");
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDark(true);
+    }
+  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -45,10 +66,22 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+    
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 20);
+      
+      // Hide on scroll down, show on scroll up
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setHidden(true);
+      } else if (currentScrollY < lastScrollY) {
+        setHidden(false);
+      }
+      lastScrollY = currentScrollY;
     };
-    window.addEventListener("scroll", handleScroll);
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -70,7 +103,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? "nav-scrolled" : ""}`}>
+      <nav className={`navbar ${scrolled ? "nav-scrolled" : ""} ${hidden ? "nav-hidden" : ""}`}>
         <div className="container nav-content">
           <Link to="/" className="nav-brand" onClick={closeMenu}>
             <div className="brand-logo">
@@ -113,6 +146,14 @@ export default function Navbar() {
               <>
                 <button
                   className="btn btn-secondary nav-btn"
+                  onClick={toggleTheme}
+                  style={{ padding: 0, width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "transparent", color: "var(--text-main)" }}
+                  title="Ganti Tema"
+                >
+                  {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                </button>
+                <button
+                  className="btn btn-secondary nav-btn"
                   onClick={handleProfile}
                   style={{ padding: 0, width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                   title={user?.name ? `Profil (${user.name})` : "Profil"}
@@ -151,6 +192,14 @@ export default function Navbar() {
               <>
                 <button
                   className="btn btn-secondary nav-btn"
+                  onClick={toggleTheme}
+                  style={{ padding: 0, width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "transparent", color: "var(--text-main)" }}
+                  title="Ganti Tema"
+                >
+                  {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                </button>
+                <button
+                  className="btn btn-secondary nav-btn"
                   onClick={handleMasuk}
                 >
                   Masuk
@@ -170,7 +219,7 @@ export default function Navbar() {
       {/* Logout Popup Modal */}
       {showLogoutPopup && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: "1rem", animation: "fadeIn 0.2s ease-out" }}>
-          <div className="card" style={{ width: "100%", maxWidth: "380px", padding: "1.75rem", animation: "slideUp 0.2s ease-out", backgroundColor: "white", borderRadius: "20px", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}>
+          <div className="card" style={{ width: "100%", maxWidth: "380px", padding: "1.75rem", animation: "slideUp 0.2s ease-out", backgroundColor: "var(--surface)", borderRadius: "20px", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#fef2f2", color: "#ef4444", margin: "0 auto 1.25rem" }}>
               <LogOut size={24} strokeWidth={2.5} />
             </div>

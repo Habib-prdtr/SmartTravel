@@ -115,10 +115,10 @@
   /* inherits from .hero-search-box */
 }
 
-/* Input fields grid on desktop */
+/* Input fields grid on desktop (3 columns for Tujuan, Tanggal, Budget) */
 .search-inputs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr;
   gap: 0.75rem;
 }
 
@@ -270,6 +270,11 @@
   .search-inputs {
     grid-template-columns: 1fr 1fr;
   }
+  
+  /* Make the first input (Destination) span full width on tablet */
+  .search-inputs > :first-child {
+    grid-column: 1 / -1;
+  }
 
   .features-grid {
     grid-template-columns: 1fr 1fr;
@@ -313,6 +318,10 @@
   .search-inputs {
     grid-template-columns: 1fr;
     gap: 0.5rem;
+  }
+  
+  .search-inputs > :first-child {
+    grid-column: auto;
   }
 
   .input-group {

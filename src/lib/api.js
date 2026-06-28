@@ -188,3 +188,16 @@ export async function generateTripWithAI(prompt) {
     body: JSON.stringify({ prompt })
   });
 }
+
+export async function deleteTripPermanent(tripId) {
+  return request(`/api/trips/${tripId}/permanent`, {
+    method: "DELETE"
+  });
+}
+
+export async function clearAllHistory() {
+  return request("/api/trips/history/all", {
+    method: "DELETE"
+  });
+}
+

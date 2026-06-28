@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Wallet, TrendingUp, Plane, Home, Utensils, Camera, CreditCard, BusFront } from "lucide-react";
+import { Wallet, TrendingUp, Plane, Home, Utensils, Camera, CreditCard, BusFront, Sparkles } from "lucide-react";
 import { createExpense, getBudget, getExpenses, getTrips } from "../lib/api";
 import { Link } from "react-router-dom";
 
@@ -92,6 +92,44 @@ export default function Budget() {
   );
   const totalAnggaran = Number(budget?.total_budget || 0);
   const persentase = totalAnggaran > 0 ? Math.min(100, Math.round((totalPengeluaran / totalAnggaran) * 100)) : 0;
+
+  const selectedTrip = useMemo(() => trips.find((t) => t.id === selectedTripId), [trips, selectedTripId]);
+
+  const parsedNotes = useMemo(() => {
+    let plainNotes = selectedTrip?.notes || "";
+    let aiEstimations = [];
+    
+    const aiMarker1 = "💡 *Perkiraan Alokasi Pengeluaran (Estimasi AI):*";
+    const aiMarker2 = "=== Estimasi AI ===";
+    
+    let markerIndex = plainNotes.indexOf(aiMarker1);
+    let isMarker1 = true;
+    if (markerIndex === -1) {
+      markerIndex = plainNotes.indexOf(aiMarker2);
+      isMarker1 = false;
+    }
+
+    if (markerIndex !== -1) {
+      const parts = plainNotes.split(isMarker1 ? aiMarker1 : aiMarker2);
+      plainNotes = parts[0].trim();
+      
+      const lines = parts[1].trim().split('\n');
+      for (const line of lines) {
+        if (isMarker1) {
+           const match = line.match(/^- (.*?): Rp (.*)$/);
+           if (match) {
+             aiEstimations.push({ title: match[1].trim(), amount: Number(match[2].trim().replace(/\./g, '')) });
+           }
+        } else {
+           const match = line.match(/^(.*?)::(.*)$/);
+           if (match) {
+             aiEstimations.push({ title: match[1].trim(), amount: Number(match[2].trim()) });
+           }
+        }
+      }
+    }
+    return { plainNotes, aiEstimations };
+  }, [selectedTrip]);
 
   const categories = useMemo(() => {
     const grouped = expenses.reduce((acc, expense) => {
@@ -233,6 +271,24 @@ export default function Budget() {
         </div>
       )}
 
+      {parsedNotes.aiEstimations.length > 0 && (
+        <div className="card" style={{ marginBottom: "2.5rem", border: "1px solid #8b5cf6", backgroundColor: "rgba(139, 92, 246, 0.04)", padding: "1.75rem" }}>
+          <h3 style={{ fontSize: "1.2rem", marginBottom: "1.5rem", color: "#8b5cf6", display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <Sparkles size={20} /> Estimasi Alokasi Pengeluaran AI
+          </h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+            {parsedNotes.aiEstimations.map((est, idx) => (
+              <div key={idx} style={{ padding: "1.25rem", backgroundColor: "var(--surface)", borderRadius: "14px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "0.4rem", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+                <span style={{ fontSize: "0.95rem", color: "var(--text-muted)", fontWeight: 600 }}>{est.title}</span>
+                <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.5px" }}>
+                  {formatCurrency(est.amount, budget?.currency || "IDR")}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem" }}>
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)", color: "white", borderRadius: "20px", boxShadow: "0 12px 24px -8px rgba(5, 150, 105, 0.5)", border: "none", position: "relative", overflow: "hidden", padding: "clamp(1.5rem, 5vw, 2rem)" }}>
           {/* Decorative shapes */}
@@ -264,7 +320,7 @@ export default function Budget() {
           </div>
         </div>
 
-        <div style={{ padding: "clamp(1.5rem, 5vw, 2rem)", borderRadius: "20px", backgroundColor: "rgba(248, 250, 252, 0.5)", border: "2px dashed #cbd5e1" }}>
+        <div style={{ padding: "clamp(1.5rem, 5vw, 2rem)", borderRadius: "20px", backgroundColor: "var(--surface-hover)", border: "2px dashed var(--border-color)" }}>
           <h3 style={{ fontSize: "1.15rem", marginBottom: "1.25rem", color: "var(--primary-dark)", display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ display: "inline-flex", width: "24px", height: "24px", backgroundColor: "var(--primary-soft)", color: "var(--primary)", borderRadius: "50%", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", fontWeight: "bold" }}>+</span>
             Catat Pengeluaran Baru
@@ -323,7 +379,7 @@ export default function Budget() {
         </div>
 
         {expenses.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem 1rem", border: "1px dashed #cbd5e1", borderRadius: "16px", backgroundColor: "rgba(248,250,252,0.5)" }}>
+          <div style={{ textAlign: "center", padding: "3rem 1rem", border: "1px dashed var(--border-color)", borderRadius: "16px", backgroundColor: "var(--surface-hover)" }}>
             <img src="/budget_empty.png" alt="No expenses" style={{ width: "120px", marginBottom: "1rem", opacity: 0.8 }} />
             <p className="text-muted" style={{ margin: 0 }}>
               Belum ada pengeluaran. Mulai catat transaksi pertamamu sekarang!

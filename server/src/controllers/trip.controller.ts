@@ -195,3 +195,44 @@ export async function updateTrip(req, res, next) {
     return next(error);
   }
 }
+
+export async function deleteTripPermanent(req, res, next) {
+  try {
+    const tripId = Number(req.params.tripId);
+    if (!Number.isInteger(tripId) || tripId <= 0) {
+      return res.status(400).json({ message: "Invalid trip id" });
+    }
+
+    const [result] = await pool.query(
+      "DELETE FROM trips WHERE id = ? AND user_id = ?",
+      [tripId, req.user.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Trip not found" });
+    }
+
+    return res.status(200).json({
+      message: "Trip permanently deleted"
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function deleteAllHistory(req, res, next) {
+  try {
+    const [result] = await pool.query(
+      "DELETE FROM trips WHERE user_id = ? AND deleted_at IS NOT NULL",
+      [req.user.id]
+    );
+
+    return res.status(200).json({
+      message: "All history cleared",
+      deletedCount: result.affectedRows
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+

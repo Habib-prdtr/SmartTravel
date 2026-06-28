@@ -32,6 +32,11 @@
   align-items: center;
   justify-content: space-between;
   height: 5rem;
+  position: relative;
+}
+
+.mobile-theme-toggle {
+  display: none;
 }
 
 .nav-brand {
@@ -137,12 +142,22 @@
   }
   
   .nav-brand {
-    flex: auto;
-    justify-content: center; /* Center the logo on mobile */
+    flex: 1;
+    justify-content: space-between;
+    padding-right: 3.5rem;
   }
 
   .mobile-menu-btn {
     display: none;
+  }
+
+  .mobile-theme-toggle {
+    display: block;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
   }
 }
 

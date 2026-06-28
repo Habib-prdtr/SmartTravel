@@ -43,6 +43,7 @@
   --bg-gradient-fade: rgba(248, 250, 252, 0);
   --bg-glow-1: rgba(59, 130, 246, 0.08);
   --bg-glow-2: rgba(14, 165, 233, 0.05);
+  --dot-color: rgba(59, 130, 246, 0.25);
 
   /* Activity Colors Light */
   --c-dining-text: #f97316;
@@ -91,6 +92,7 @@
   --bg-gradient-fade: rgba(6, 11, 25, 0);
   --bg-glow-1: rgba(59, 130, 246, 0.08);
   --bg-glow-2: rgba(14, 165, 233, 0.05);
+  --dot-color: rgba(255, 255, 255, 0.12);
 
   /* Activity Colors Dark */
   --c-dining-text: #fdba74;
@@ -109,6 +111,7 @@
 :root.dark .brand-text-styled .travel { 
   background: linear-gradient(135deg, #60a5fa, #38bdf8); 
   -webkit-background-clip: text; 
+  background-clip: text;
 }
 
 * {
@@ -165,6 +168,7 @@ button {
   font-weight: 800;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-left: 1px;
 }
@@ -176,6 +180,7 @@ button {
 .brand-text-styled.light .travel {
   background: linear-gradient(135deg, #ffffff, #93c5fd);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -256,7 +261,13 @@ select:focus {
   outline: none !important;
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25) !important;
-  background-color: var(--bg-color) !important;
+  background-color: var(--surface) !important;
+}
+
+/* Placeholder visibility for dark mode */
+::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 /* Exceptions for TripForm Search Box */

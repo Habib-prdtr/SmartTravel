@@ -136,7 +136,7 @@
 .input-group:focus-within {
   border-color: var(--primary-dark);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-  background-color: #f8fafc;
+  background-color: var(--surface-hover);
 }
 
 .input-group-header {

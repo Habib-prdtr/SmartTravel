@@ -246,12 +246,12 @@ export default function TripForm() {
               onChange={(e) => setAiPrompt(e.target.value)}
               style={{
                 width: "100%", minHeight: "110px", padding: "1.2rem", borderRadius: "16px",
-                border: "2px solid #ddd6fe", fontSize: "1.05rem", resize: "vertical",
-                backgroundColor: "#f5f3ff", color: "#4c1d95", outline: "none",
+                border: "2px solid rgba(139, 92, 246, 0.4)", fontSize: "1.05rem", resize: "vertical",
+                backgroundColor: "var(--surface)", color: "var(--text-main)", outline: "none",
                 lineHeight: "1.5", transition: "all 0.3s ease"
               }}
-              onFocus={(e) => { e.target.style.border = "2px solid #8b5cf6"; e.target.style.boxShadow = "0 0 0 4px rgba(139, 92, 246, 0.15)"; e.target.style.backgroundColor = "#fff"; }}
-              onBlur={(e) => { e.target.style.border = "2px solid #ddd6fe"; e.target.style.boxShadow = "none"; e.target.style.backgroundColor = "#f5f3ff"; }}
+              onFocus={(e) => { e.target.style.border = "2px solid #8b5cf6"; e.target.style.boxShadow = "0 0 0 4px rgba(139, 92, 246, 0.2)"; e.target.style.backgroundColor = "var(--surface)"; }}
+              onBlur={(e) => { e.target.style.border = "2px solid rgba(139, 92, 246, 0.4)"; e.target.style.boxShadow = "none"; e.target.style.backgroundColor = "var(--surface)"; }}
               required={mode === "ai"}
             />
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center", marginTop: "0.2rem" }}>
@@ -262,12 +262,12 @@ export default function TripForm() {
                   type="button"
                   onClick={() => setAiPrompt(suggestion)}
                   style={{
-                    padding: "0.3rem 0.75rem", borderRadius: "20px", border: "1px solid #c4b5fd",
-                    backgroundColor: "white", color: "#6d28d9", fontSize: "0.8rem", cursor: "pointer",
-                    transition: "background-color 0.2s"
+                    padding: "0.3rem 0.75rem", borderRadius: "20px", border: "1px solid rgba(139, 92, 246, 0.4)",
+                    backgroundColor: "var(--surface)", color: "var(--text-main)", fontSize: "0.8rem", cursor: "pointer",
+                    transition: "all 0.2s"
                   }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = "#ede9fe"}
-                  onMouseOut={(e) => e.target.style.backgroundColor = "white"}
+                  onMouseOver={(e) => { e.target.style.backgroundColor = "rgba(139, 92, 246, 0.15)"; e.target.style.color = "#8b5cf6"; e.target.style.borderColor = "#8b5cf6"; }}
+                  onMouseOut={(e) => { e.target.style.backgroundColor = "var(--surface)"; e.target.style.color = "var(--text-main)"; e.target.style.borderColor = "rgba(139, 92, 246, 0.4)"; }}
                 >
                   {suggestion}
                 </button>

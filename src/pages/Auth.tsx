@@ -46,8 +46,6 @@ export default function Auth() {
     border: "1.5px solid var(--border-color)",
     borderRadius: "var(--radius-md)",
     fontSize: "1rem",
-    color: "var(--text-main)",
-    backgroundColor: "var(--bg-color)",
     outline: "none",
     transition: "border-color 0.2s, box-shadow 0.2s",
     fontFamily: "inherit"

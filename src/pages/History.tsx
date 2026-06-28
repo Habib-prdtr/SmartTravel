@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { History as HistoryIcon, ChevronRight } from "lucide-react";
-import { getTripHistory, getTrips } from "../lib/api";
+import { History as HistoryIcon, ChevronRight, Trash2 } from "lucide-react";
+import { getTripHistory, getTrips, deleteTripPermanent, clearAllHistory } from "../lib/api";
 import { Link, useNavigate } from "react-router-dom";
 
 function formatDate(dateValue) {
@@ -19,10 +19,36 @@ export default function History() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isFetchingPage, setIsFetchingPage] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, tripId: null, tripName: "" });
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   const openDetails = (trip) => {
     navigate(`/history/${trip.id}`);
+  };
+
+  const confirmDelete = (tripId, tripName) => {
+    setDeleteConfirm({ show: true, tripId, tripName });
+  };
+
+  const executeDelete = async () => {
+    if (!deleteConfirm.tripId) return;
+    setIsDeleting(true);
+    try {
+      if (deleteConfirm.tripId === 'ALL') {
+        await clearAllHistory();
+        setPage(1);
+      } else {
+        await deleteTripPermanent(deleteConfirm.tripId);
+      }
+      setDeleteConfirm({ show: false, tripId: null, tripName: "" });
+      fetchHistoryPage(deleteConfirm.tripId === 'ALL' ? 1 : page);
+    } catch (error) {
+      setErrorMessage(error.message || "Gagal menghapus history");
+      setDeleteConfirm({ show: false, tripId: null, tripName: "" });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   useEffect(() => {
@@ -110,9 +136,16 @@ export default function History() {
           </div>
 
           <div className="card" style={{ padding: "1.5rem" }}>
-            <h2 style={{ marginTop: 0, marginBottom: "1rem", fontSize: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              History Dihapus <span style={{ backgroundColor: "#fef2f2", color: "#ef4444", padding: "2px 8px", borderRadius: "12px", fontSize: "0.85rem" }}>{historyTrips.length}</span>
-            </h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                History <span style={{ backgroundColor: "#fef2f2", color: "#ef4444", padding: "2px 8px", borderRadius: "12px", fontSize: "0.85rem" }}>{historyTrips.length}</span>
+              </h2>
+              {historyTrips.length > 0 && (
+                <button type="button" onClick={() => confirmDelete('ALL', 'Semua History')} className="btn btn-secondary" style={{ padding: "0.4rem 0.9rem", fontSize: "0.85rem", borderRadius: "20px", cursor: "pointer", backgroundColor: "#fee2e2", color: "#ef4444", border: "1px solid #fca5a5", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <Trash2 size={16} /> Bersihkan
+                </button>
+              )}
+            </div>
             {historyTrips.length === 0 ? (
               <p className="text-muted" style={{ margin: 0 }}>
                 Belum ada planner di history.
@@ -127,9 +160,14 @@ export default function History() {
                       Dihapus: {formatDate(trip.deleted_at)}
                     </span>
                     <br />
-                    <button type="button" onClick={() => openDetails(trip)} className="btn btn-secondary" style={{ padding: "0.3rem 0.75rem", fontSize: "0.85rem", borderRadius: "20px", display: "inline-block", cursor: "pointer" }}>
-                      Lihat Detail
-                    </button>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button type="button" onClick={() => openDetails(trip)} className="btn btn-secondary" style={{ padding: "0.3rem 0.75rem", fontSize: "0.85rem", borderRadius: "20px", cursor: "pointer", flex: 1 }}>
+                        Lihat Detail
+                      </button>
+                      <button type="button" onClick={() => confirmDelete(trip.id, trip.name)} className="btn btn-secondary" style={{ padding: "0.3rem 0.75rem", fontSize: "0.85rem", borderRadius: "20px", cursor: "pointer", backgroundColor: "#fee2e2", color: "#ef4444", border: "1px solid #fca5a5" }}>
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 ))}
 
@@ -160,6 +198,37 @@ export default function History() {
             )}
           </div>
         </div>
+      )}
+
+      {deleteConfirm.show && createPortal(
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: "1rem" }}>
+          <div className="card" style={{ padding: "2rem", maxWidth: "400px", width: "100%", borderRadius: "var(--radius-lg)" }}>
+            <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#ef4444", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Trash2 size={20} /> Konfirmasi Hapus
+            </h3>
+            <p style={{ margin: "0 0 1.5rem 0", color: "var(--text-color)", lineHeight: "1.5" }}>
+              Yakin ingin menghapus secara permanen history untuk <strong>"{deleteConfirm.tripName}"</strong>? Data ini tidak dapat dikembalikan.
+            </p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setDeleteConfirm({ show: false, tripId: null, tripName: "" })}
+                disabled={isDeleting}
+              >
+                Batal
+              </button>
+              <button 
+                className="btn btn-primary" 
+                style={{ backgroundColor: "#ef4444", borderColor: "#ef4444" }}
+                onClick={executeDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Menghapus..." : "Hapus Permanen"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

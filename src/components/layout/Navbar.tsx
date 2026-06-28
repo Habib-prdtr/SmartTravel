@@ -115,6 +115,18 @@ export default function Navbar() {
             </div>
           </Link>
 
+          {/* Mobile Theme Toggle (Absolute right) */}
+          <div className="mobile-theme-toggle">
+            <button
+              className="btn btn-secondary nav-btn"
+              onClick={toggleTheme}
+              style={{ padding: 0, width: "38px", height: "38px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "transparent", color: "var(--text-main)" }}
+              title="Ganti Tema"
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </div>
+
           {/* Desktop Links (Center) */}
           <div className="nav-links desktop-only">
             <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`}>

@@ -488,6 +488,24 @@ export default function Planner() {
     });
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: selectedTrip?.name || 'SmartTravel Planner',
+          text: `Cek rencana perjalanan saya: ${selectedTrip?.name || ''}`,
+          url: url,
+        });
+      } catch (err) {
+        console.error("Share failed:", err);
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      showSuccessModal("Tautan planner berhasil disalin ke clipboard!");
+    }
+  };
+
   if (isLoadingTrips) {
     return (
       <div className="container animate-fade-in" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
@@ -585,7 +603,7 @@ export default function Planner() {
             <button type="button" onClick={() => navigate("/map", { state: { trip: selectedTrip } })} className="btn btn-primary" style={{ padding: "0.6rem 1.5rem", display: "flex", alignItems: "center", gap: "8px" }}>
               <Map size={18} /> Peta Rute
             </button>
-            <button type="button" className="btn btn-secondary" style={{ padding: "0.6rem 1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
+            <button type="button" onClick={handleShare} className="btn btn-secondary" style={{ padding: "0.6rem 1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
               <Share2 size={18} /> Bagikan
             </button>
           </div>
@@ -631,20 +649,20 @@ export default function Planner() {
         {selectedTrip && selectedTrip.packing_list && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
             {selectedTrip.packing_list && (
-              <div style={{ background: "linear-gradient(145deg, #f5f3ff 0%, #ffffff 100%)", borderRadius: "20px", padding: "2rem", border: "1px solid #ede9fe", boxShadow: "0 10px 25px -5px rgba(139, 92, 246, 0.1)", position: "relative", overflow: "hidden" }}>
+              <div style={{ backgroundColor: "var(--surface)", borderRadius: "20px", padding: "2rem", border: "1px solid var(--border-color)", boxShadow: "0 10px 25px -5px rgba(139, 92, 246, 0.1)", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", top: "-20px", right: "-20px", opacity: 0.05, transform: "rotate(15deg)", pointerEvents: "none" }}>
                   <Package size={150} color="#8b5cf6" />
                 </div>
-                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", margin: "0 0 1.5rem 0", color: "#5b21b6", fontSize: "1.3rem", fontWeight: 700, position: "relative", zIndex: 1 }}>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", margin: "0 0 1.5rem 0", color: "var(--text-main)", fontSize: "1.3rem", fontWeight: 700, position: "relative", zIndex: 1 }}>
                   <Package size={24} color="#7c3aed" style={{ filter: "drop-shadow(0 2px 4px rgba(124,58,237,0.3))" }} /> AI Packing List
                 </h3>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem", position: "relative", zIndex: 1 }}>
                   {(typeof selectedTrip.packing_list === "string" ? JSON.parse(selectedTrip.packing_list) : selectedTrip.packing_list).map((item, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.8rem", backgroundColor: "#ffffff", padding: "0.8rem 1.2rem", borderRadius: "14px", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", cursor: "default" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "#a78bfa"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 10px 15px -3px rgba(139, 92, 246, 0.15)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.02)"; }}>
-                      <div style={{ backgroundColor: "#ede9fe", color: "#7c3aed", borderRadius: "50%", padding: "5px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.8rem", backgroundColor: "var(--bg-color)", padding: "0.8rem 1.2rem", borderRadius: "14px", border: "1px solid var(--border-color)", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", cursor: "default" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "#a78bfa"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 10px 15px -3px rgba(139, 92, 246, 0.15)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.02)"; }}>
+                      <div style={{ backgroundColor: "rgba(139, 92, 246, 0.15)", color: "#8b5cf6", borderRadius: "50%", padding: "5px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                         <CheckCircle2 size={16} strokeWidth={3} />
                       </div>
-                      <span style={{ fontSize: "0.95rem", color: "#334155", fontWeight: 500, lineHeight: 1.3 }}>{item}</span>
+                      <span style={{ fontSize: "0.95rem", color: "var(--text-main)", fontWeight: 500, lineHeight: 1.3 }}>{item}</span>
                     </div>
                   ))}
                 </div>

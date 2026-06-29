@@ -40,20 +40,8 @@ app.use(helmet());
 // 2. Kompresi Payload Response
 app.use(compression());
 
-// 3. Konfigurasi CORS ketat
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://127.0.0.1:5173"
-];
 app.use(cors({
-  origin: (origin, callback) => {
-    // Izinkan requests tanpa origin (misal mobile app atau curl) atau origin yang terdaftar
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Akses diblokir oleh CORS'));
-    }
-  },
+  origin: true, // Izinkan semua origin (Mobile App, Web, Ngrok, dll)
   credentials: true
 }));
 
@@ -66,11 +54,18 @@ app.get("/health", (_req, res) => {
   });
 });
 
-app.use("/api/auth", strictLimiter, authRoutes);
-app.use("/api/trips", generalLimiter, tripRoutes);
-app.use("/api/trips", generalLimiter, itineraryRoutes);
-app.use("/api/trips", generalLimiter, budgetRoutes);
-app.use("/api/ai", strictLimiter, aiRoutes);
+// app.use("/api/auth", strictLimiter, authRoutes);
+// app.use("/api/trips", generalLimiter, tripRoutes);
+// app.use("/api/trips", generalLimiter, itineraryRoutes);
+// app.use("/api/trips", generalLimiter, budgetRoutes);
+// app.use("/api/ai", strictLimiter, aiRoutes);
+
+// Rate limiting disabled for testing
+app.use("/api/auth", authRoutes);
+app.use("/api/trips", tripRoutes);
+app.use("/api/trips", itineraryRoutes);
+app.use("/api/trips", budgetRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error("[Global Error]:", err);

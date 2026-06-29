@@ -24,6 +24,17 @@ router.post("/generate", authMiddleware, async (req, res) => {
       baseURL: "https://api.groq.com/openai/v1"
     });
 
+    // Ambil data profil pengguna untuk personalisasi AI (Hobi & Diet)
+    const [userRows] = await pool.execute('SELECT hobby, dietary_preferences FROM users WHERE id = ?', [userId]);
+    const userProfile = userRows[0] || {};
+    const hobbyText = userProfile.hobby ? `Hobi: ${userProfile.hobby}. ` : '';
+    const dietText = userProfile.dietary_preferences ? `Preferensi Makanan: ${userProfile.dietary_preferences}. ` : '';
+    
+    let personalizationInstructions = '';
+    if (hobbyText || dietText) {
+      personalizationInstructions = `\n\nATURAN PERSONALISASI (SANGAT PENTING):\nSesuaikan itinerary ini dengan profil pengguna berikut. ${hobbyText}${dietText}Pastikan untuk merekomendasikan tempat wisata atau restoran yang sangat relevan dengan profil ini!`;
+    }
+
     // Instruksi sistem yang ketat untuk mengembalikan JSON schema yang kita inginkan
     const systemPrompt = `Kamu adalah AI Travel Assistant ahli. 
 Tugasmu adalah membuat rencana perjalanan (itinerary) lengkap berdasarkan input user.
@@ -68,7 +79,7 @@ Pastikan total expenses tidak melebihi budget (jika user memberikan budget).
 Pastikan destinasi yang direkomendasikan masuk akal (lokasi saling berdekatan dalam satu area/kota jika di hari yang sama).
 
 ATURAN PETA (OPENSTREETMAP/LEAFLET):
-Aplikasi ini memunculkan lokasi pada peta menggunakan OpenStreetMap. Oleh karena itu, nilai "locationName" HARUS merupakan nama tempat/landmark asli yang spesifik, resmi, dan terdaftar di OpenStreetMap agar bisa dicari oleh sistem (contoh: "Candi Prambanan", "Pantai Kuta, Bali", bukan sekadar "Makan siang di restoran" atau "Jalan-jalan di pusat kota"). Gunakan nama asli tempat wisata atau restoran tersebut.`;
+Aplikasi ini memunculkan lokasi pada peta menggunakan OpenStreetMap. Oleh karena itu, nilai "locationName" HARUS merupakan nama tempat/landmark asli yang spesifik, resmi, dan terdaftar di OpenStreetMap agar bisa dicari oleh sistem (contoh: "Candi Prambanan", "Pantai Kuta, Bali", bukan sekadar "Makan siang di restoran" atau "Jalan-jalan di pusat kota"). Gunakan nama asli tempat wisata atau restoran tersebut.${personalizationInstructions}`;
 
     const response = await openai.chat.completions.create({
       model: "llama-3.1-8b-instant",

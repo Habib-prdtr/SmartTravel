@@ -5,19 +5,20 @@ import { Capacitor } from "@capacitor/core";
 // 10.0.2.2 adalah IP khusus untuk mengakses localhost milik laptop/host.
 const isNative = Capacitor.isNativePlatform();
 
-// Jika di HP (via Vite server), kita gunakan relative path ('') agar proxy Vite yang menangani,
-// sehingga tidak diblokir oleh Windows Firewall.
-let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (isNative ? "http://10.0.2.2:5000" : "");
+// Vite (vite.config.ts) sekarang secara otomatis menyuntikkan IP WiFi Anda 
+// ke dalam VITE_API_BASE_URL saat Anda melakukan proses Build APK.
+let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-// Override khusus untuk Android Emulator jika tertulis localhost
-if (isNative && API_BASE_URL.includes("localhost")) {
-  API_BASE_URL = API_BASE_URL.replace("localhost", "10.0.2.2");
+// Tidak perlu override manual lagi!
+if (isNative && !API_BASE_URL) {
+  API_BASE_URL = "http://10.0.2.2:5000"; // Fallback ke emulator
 }
 
 async function request(path, options = {}) {
   const token = getToken();
   const headers = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "69420",
     ...(options.headers || {})
   };
 

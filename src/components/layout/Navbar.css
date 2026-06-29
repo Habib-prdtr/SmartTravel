@@ -213,17 +213,6 @@
   z-index: 2;
 }
 
-.bottom-nav-label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  opacity: 0.8;
-  position: absolute;
-  bottom: 2px;
-  transform: translateY(10px) scale(0.9);
-  opacity: 0;
-}
-
 .bottom-nav-item:hover {
   color: var(--primary);
 }
@@ -235,17 +224,10 @@
 .bottom-nav-item.active .bottom-nav-icon {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
-  transform: translateY(-20px);
+  transform: translateY(-12px);
   box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
   width: 48px;
   height: 48px;
-}
-
-.bottom-nav-item.active .bottom-nav-label {
-  opacity: 1;
-  transform: translateY(2px) scale(1);
-  color: var(--primary-dark);
-  font-weight: 700;
 }
 
 @media (max-width: 768px) {

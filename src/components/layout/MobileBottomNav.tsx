@@ -48,7 +48,6 @@ export default function MobileBottomNav() {
               <div className="bottom-nav-icon">
                 {item.icon}
               </div>
-              <span className="bottom-nav-label">{item.label}</span>
             </Link>
           );
         })}

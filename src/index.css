@@ -352,6 +352,12 @@ input:-webkit-autofill:active {
   .app-container {
     padding-bottom: 65px; /* Height of the bottom nav */
   }
+
+  /* Compact Cards for Mobile */
+  .card {
+    padding: 1.25rem !important;
+    border-radius: var(--radius-md) !important;
+  }
 }
 
 /* Beautiful PDF Print Styles */

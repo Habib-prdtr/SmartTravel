@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Calendar, Map, Activity, Edit2, X, CheckCircle2, Heart, Phone, Coffee } from "lucide-react";
+import { User, Mail, Calendar, Map, Activity, Edit2, X, CheckCircle2, Heart, Phone, Coffee, LogOut } from "lucide-react";
 import { getMe, getTrips, updateProfile } from "../lib/api";
 import { clearSession, saveSession } from "../lib/session";
 
@@ -96,6 +96,12 @@ export default function Profile() {
     }
   };
 
+  const handleLogout = () => {
+    clearSession();
+    window.dispatchEvent(new Event("storage"));
+    navigate("/auth");
+  };
+
   if (isLoading) {
     return (
       <div className="container" style={{ paddingTop: "4rem", textAlign: "center" }}>
@@ -109,10 +115,18 @@ export default function Profile() {
 
   if (error || !user) {
     return (
-      <div className="container" style={{ paddingTop: "4rem" }}>
-        <div className="card" style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center" }}>
-          <p style={{ color: "#b91c1c", marginBottom: "1rem" }}>{error || "Data user tidak ditemukan."}</p>
-          <button className="btn btn-secondary" onClick={() => navigate("/auth")}>Kembali ke Login</button>
+      <div className="container" style={{ paddingTop: "4rem", paddingBottom: "5rem" }}>
+        <div className="card" style={{ maxWidth: "500px", margin: "0 auto", textAlign: "center", padding: "3rem 2rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "var(--primary-soft)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
+            <User size={40} />
+          </div>
+          <h2 style={{ fontSize: "1.75rem", marginBottom: "0.75rem" }}>Profil Pengguna</h2>
+          <p className="text-muted" style={{ marginBottom: "2rem", lineHeight: "1.6" }}>
+            Anda belum masuk ke akun. Silakan masuk atau daftar terlebih dahulu untuk mengatur preferensi wisata dan menyimpan riwayat perjalanan Anda.
+          </p>
+          <button className="btn btn-primary" onClick={() => navigate("/auth")} style={{ padding: "0.85rem 2.5rem", fontSize: "1.05rem" }}>
+            Masuk / Daftar Sekarang
+          </button>
         </div>
       </div>
     );
@@ -188,6 +202,21 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
+        {/* Logout Button */}
+        <button 
+          className="btn" 
+          onClick={handleLogout} 
+          style={{ 
+            width: "100%", padding: "0.85rem", display: "flex", alignItems: "center", justifyContent: "center", 
+            gap: "0.5rem", color: "#ef4444", border: "1px solid #fca5a5", backgroundColor: "rgba(239, 68, 68, 0.05)",
+            borderRadius: "var(--radius-md)", fontSize: "1rem", fontWeight: 600, transition: "all 0.2s ease"
+          }}
+          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.borderColor = "#ef4444"; }}
+          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.05)"; e.currentTarget.style.borderColor = "#fca5a5"; }}
+        >
+          <LogOut size={18} /> Keluar dari Akun
+        </button>
       </div>
 
       {/* Edit Profile Modal */}

@@ -49,9 +49,9 @@ export default function Footer() {
           <div>
             <h4 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-main)' }}>Bantuan</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <li><a href="#" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', transition: 'color 0.2s' }}>Pusat Bantuan</a></li>
-              <li><a href="#" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', transition: 'color 0.2s' }}>Syarat & Ketentuan</a></li>
-              <li><a href="#" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', transition: 'color 0.2s' }}>Kebijakan Privasi</a></li>
+              <li><Link to="/help-center" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', transition: 'color 0.2s' }}>Pusat Bantuan</Link></li>
+              <li><Link to="/terms-conditions" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', transition: 'color 0.2s' }}>Syarat & Ketentuan</Link></li>
+              <li><Link to="/privacy-policy" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', transition: 'color 0.2s' }}>Kebijakan Privasi</Link></li>
             </ul>
           </div>
 

@@ -9,6 +9,9 @@ import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import HistoryDetail from './pages/HistoryDetail';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import HelpCenter from './pages/HelpCenter';
 import { isAuthenticated } from './lib/session';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -39,6 +42,13 @@ export default function AppRoutes() {
           </PublicOnlyRoute>
         )}
       />
+
+      {/* Rute Publik dengan MainLayout */}
+      <Route element={<MainLayout />}>
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
+        <Route path="/help-center" element={<HelpCenter />} />
+      </Route>
 
       {/* Rute yang memuat antarmuka reguler (berisi Navbar & Footer) */}
       <Route

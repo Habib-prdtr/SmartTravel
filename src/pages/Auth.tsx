@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plane, Mail, Lock, User, ArrowRight, Globe, Eye, EyeOff } from "lucide-react";
+import { Plane, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { login, register } from "../lib/api";
 import { saveSession } from "../lib/session";
@@ -326,20 +326,25 @@ export default function Auth() {
             </button>
           </form>
 
-          <div style={{ display: "flex", alignItems: "center", margin: "1.75rem 0" }}>
-            <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-color)" }} />
-            <span style={{ padding: "0 1rem", fontSize: "0.82rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>atau lanjutkan dengan</span>
-            <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-color)" }} />
-          </div>
+          <p style={{ 
+            marginTop: "1.5rem", 
+            textAlign: "center", 
+            fontSize: "0.8rem", 
+            color: "var(--text-muted)",
+            lineHeight: "1.5"
+          }}>
+            Dengan melanjutkan, Anda menyetujui{" "}
+            <Link to="/terms-conditions" style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>
+              Syarat & Ketentuan
+            </Link>{" "}
+            dan{" "}
+            <Link to="/privacy-policy" style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>
+              Kebijakan Privasi
+            </Link>{" "}
+            kami.
+          </p>
 
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <button className="btn btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.75rem", gap: "0.5rem" }}>
-              <Globe size={17} /> Google
-            </button>
-            <button className="btn btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.75rem", gap: "0.5rem" }}>
-              <span style={{ fontWeight: 900, fontSize: "1.1rem", lineHeight: 1 }}>A</span> Apple
-            </button>
-          </div>
+
         </div>
       </div>
 

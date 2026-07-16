@@ -1,0 +1,8 @@
+# Example Android Keystore configuration properties.
+# Copy this file to 'key.properties' in the same folder and fill in the values.
+# DO NOT commit the actual 'key.properties' file to version control.
+
+storeFile=release.keystore
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyAlias=YOUR_KEY_ALIAS
+keyPassword=YOUR_KEY_PASSWORD

@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vite.dev/config/
 export default defineConfig({
   define: {
-    'import.meta.env.VITE_API_BASE_URL': JSON.stringify(`https://dangle-revocable-pretzel.ngrok-free.dev`)
+    'import.meta.env.VITE_API_BASE_URL': JSON.stringify(`https://app-f9f1a674-9d5a-4f1b-a68c-6aa72bb0479a.cleverapps.io`)
   },
   server: { 
     host: true,
